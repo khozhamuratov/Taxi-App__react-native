@@ -1,7 +1,7 @@
 import {Dimensions, StyleSheet} from 'react-native';
 const width = Dimensions.get('window').width;
 
-export const styles = StyleSheet.create({
+export const headerStyles = StyleSheet.create({
   header: {
     alignItems: 'center',
     paddingTop: 50,
@@ -10,6 +10,8 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
     paddingBottom: 20,
+    height: 100,
+    // backgroundColor: '#212121',
   },
   container: {
     display: 'flex',
@@ -19,7 +21,7 @@ export const styles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 15,
     borderRadius: 30,
-    backgroundColor: '#222222',
+    backgroundColor: '#414141',
   },
   title: {
     color: 'white',

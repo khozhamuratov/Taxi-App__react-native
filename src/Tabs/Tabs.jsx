@@ -2,16 +2,14 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React from 'react';
 import {StyleSheet, Text} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import ClientPage from './pages/ClientsPage/ClientPage';
-import MainPage from './pages/MainPage/MainPage';
-import ProfilePage from './pages/ProfilePage/ProfilePage';
+import MainPage from '../pages/MainPage/MainPage';
+import ProfilePage from '../pages/ProfilePage/ProfilePage';
+import WorkPage from '../pages/WorkPage/WorkPage';
 import {tabStyles} from './styles';
-
-type Props = {};
 
 const Tab = createBottomTabNavigator();
 
-const Tabs = (props: Props) => {
+const Tabs = props => {
   return (
     <Tab.Navigator
       sceneContainerStyle={{
@@ -54,26 +52,26 @@ const Tabs = (props: Props) => {
       <Tab.Screen
         options={({route}) => ({
           tabBarIcon: ({focused, color}) => {
-            if (route.name === 'Clients') {
+            if (route.name === 'Work') {
               color = focused ? '#f1f1f3' : '#424242';
             }
 
             return (
               <>
-                <Icon name="people" size={25} color={color} />
+                <Icon name="car" size={25} color={color} />
                 <Text
                   style={[
                     tabStyles.tabTxt,
                     focused ? tabStyles.focused : null,
                   ]}>
-                  Клиенты
+                  Работа
                 </Text>
               </>
             );
           },
         })}
-        name="Clients"
-        component={ClientPage}
+        name="Work"
+        component={WorkPage}
       />
       <Tab.Screen
         options={({route}) => ({

@@ -1,12 +1,5 @@
-import React from 'react';
-import {
-  Linking,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import React, {useState} from 'react';
+import {Linking, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {orderStyle} from './styles';
 
 type Props = {};
@@ -36,14 +29,30 @@ const clientData = [
     address: 'ул.Беруний ориентир Лас Вегас',
     phoneNumber: '+998 91 303 71 13',
   },
+  {
+    from: 'Нукус',
+    to: 'Шымбай',
+    address: 'ул.Беруний ориентир Лас Вегас',
+    phoneNumber: '+998 91 303 71 13',
+  },
+  {
+    from: 'Нукус',
+    to: 'Шымбай',
+    address: 'ул.Беруний ориентир Лас Вегас',
+    phoneNumber: '+998 91 303 71 13',
+  },
 ];
 
 const ClientPage = (props: Props) => {
+  const [history, setHistory] = useState(false);
   return (
-    <ScrollView
-      style={orderStyle.clientPageContainer}
-      showsVerticalScrollIndicator={false}>
-      <Text style={orderStyle.pageTitle}>Ваши поссажиры:</Text>
+    <View
+      style={{
+        gap: 10,
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        marginBottom: 220,
+      }}>
       {clientData.map((clientData, index) => (
         <View key={index} style={orderStyle.container}>
           <View style={orderStyle.alertHeader}>
@@ -64,7 +73,7 @@ const ClientPage = (props: Props) => {
           </TouchableOpacity>
         </View>
       ))}
-    </ScrollView>
+    </View>
   );
 };
 

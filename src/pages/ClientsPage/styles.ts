@@ -4,11 +4,22 @@ const width = Dimensions.get('screen').width;
 
 export const orderStyle = StyleSheet.create({
   clientPageContainer: {
-    marginTop: 50,
+    // paddingTop: 20,
     marginHorizontal: 15,
   },
+  headerBtns: {
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  headerBtn: {
+    borderBottomColor: 'white',
+    borderBottomWidth: 2,
+    paddingBottom: 15,
+    width: width / 2,
+    alignItems: 'center',
+  },
   container: {
-    marginBottom: 15,
     padding: 15,
     backgroundColor: '#222222',
     borderRadius: 10,
@@ -34,7 +45,6 @@ export const orderStyle = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: 'white',
-    marginBottom: 20,
   },
   buttonTxt: {
     fontSize: 14,

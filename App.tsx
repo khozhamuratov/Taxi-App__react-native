@@ -1,22 +1,23 @@
 import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
 import React from 'react';
 import {StatusBar, View} from 'react-native';
+import {Provider} from 'react-redux';
+import IsAuthorization from './src/authorization';
 import Alert from './src/components/Alert/Alert';
 import {alertStyle} from './src/components/Alert/styles';
-import Tabs from './src/Tabs';
+import {store} from './src/redux/store';
 
 function App(): React.JSX.Element {
-  const Stack = createStackNavigator();
-
   return (
-    <NavigationContainer>
+    <Provider store={store}>
       <StatusBar backgroundColor={'#141414'} />
-      <Tabs />
+      <NavigationContainer>
+        <IsAuthorization />
+      </NavigationContainer>
       <View style={alertStyle.container}>
         <Alert />
       </View>
-    </NavigationContainer>
+    </Provider>
   );
 }
 

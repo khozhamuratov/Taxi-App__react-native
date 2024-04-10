@@ -1,108 +1,57 @@
 import React from 'react';
-import {StyleSheet, View} from 'react-native';
-import Driver from './Driver/Driver';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {selected, selectedDriver} from '../../features/users/usersSlice';
+import {useAppDispatch, useAppSelector} from '../../redux/hooks';
+import {driverStyles} from './Driver/styles';
 
-type Props = {};
+const Line = () => {
+  const {listDrivers} = useAppSelector(select => select.listUsers);
 
-const userDatas = [
-  {
-    id: 1,
-    firstName: 'Nurman',
-    lastName: 'Xojamuratov',
-    carNumber: '95 G 411 GA',
-    passengers: 4,
-    joinedAt: '01.04.2024 15:38',
-  },
-  {
-    id: 2,
-    firstName: 'Polat',
-    lastName: 'Beknazarov',
-    carNumber: '95 G 211 AA',
-    passengers: 1,
-    joinedAt: '01.04.2024 15:38',
-  },
-  {
-    id: 3,
-    firstName: 'Omirzakov',
-    lastName: 'Nurpolat',
-    carNumber: '95 W 141 GA',
-    passengers: 0,
-    joinedAt: '01.04.2024 15:38',
-  },
-  {
-    id: 4,
-    firstName: 'Aydos',
-    lastName: 'Kasdapsdas',
-    carNumber: '95 G 411 GA',
-    passengers: 0,
-    joinedAt: '01.04.2024 15:38',
-  },
-  {
-    id: 5,
-    firstName: 'Владимир',
-    lastName: 'Владимирович',
-    carNumber: '95 G 411 GA',
-    passengers: 0,
-    joinedAt: '01.04.2024 15:38',
-  },
-  {
-    id: 6,
-    firstName: 'Владимир',
-    lastName: 'Владимирович',
-    carNumber: '95 G 411 GA',
-    passengers: 0,
-    joinedAt: '01.04.2024 15:38',
-  },
-  {
-    id: 7,
-    firstName: 'Владимир',
-    lastName: 'Владимирович',
-    carNumber: '95 G 411 GA',
-    passengers: 0,
-    joinedAt: '01.04.2024 15:38',
-  },
-  {
-    id: 8,
-    firstName: 'Владимир',
-    lastName: 'Владимирович',
-    carNumber: '95 G 411 GA',
-    passengers: 0,
-    joinedAt: '01.04.2024 15:38',
-  },
-  {
-    id: 9,
-    firstName: 'Владимир',
-    lastName: 'Владимирович',
-    carNumber: '95 G 411 GA',
-    passengers: 0,
-    joinedAt: '01.04.2024 15:38',
-  },
-  {
-    id: 10,
-    firstName: 'Владимир',
-    lastName: 'Владимирович',
-    carNumber: '95 G 411 GA',
-    passengers: 0,
-    joinedAt: '01.04.2024 15:38',
-  },
-];
+  const dispatch = useAppDispatch();
 
-const Line = ({
-  setIsActive,
-}: {
-  setIsActive: React.Dispatch<React.SetStateAction<boolean>>;
-}) => {
   return (
     <>
       <View>
-        {userDatas.map((user, index) => (
-          <Driver
-            setIsActive={setIsActive}
-            key={user.id}
-            user={user}
-            index={index}
-          />
-        ))}
+        {listDrivers.length > 0 ? (
+          listDrivers.map((user, index) => (
+            <TouchableOpacity
+              onPress={() => {
+                dispatch(selectedDriver(user.id));
+                dispatch(selected());
+              }}
+              key={user.id}
+              style={[
+                driverStyles.driversTableRow,
+                user.id === 3 ? driverStyles.active : null,
+              ]}>
+              <View style={driverStyles.driverInfo}>
+                <Text style={driverStyles.span}>{index + 1}</Text>
+                <View style={driverStyles.userName}>
+                  <Text style={driverStyles.userTxt}>{user.first_name}</Text>
+                  <Text style={driverStyles.userTxt}>{user.last_name}</Text>
+                  <Text style={driverStyles.userCarTxt}>{user.car_number}</Text>
+                </View>
+              </View>
+              <Text
+                style={
+                  (driverStyles.userTxt, {fontWeight: '400', color: '#CCC'})
+                }>
+                {user.passengers} / 4
+              </Text>
+            </TouchableOpacity>
+          ))
+        ) : (
+          <View
+            style={{
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: 700,
+            }}>
+            <Text style={{color: '#CCC', fontSize: 16, fontWeight: '600'}}>
+              Список пуст
+            </Text>
+          </View>
+        )}
       </View>
     </>
   );
