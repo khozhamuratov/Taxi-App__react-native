@@ -73,6 +73,7 @@ export const usersSlice = createSlice({
     setOrdersDetail: (state, action) => {
       const newDatas = [...state.ordersDetails, action.payload];
       state.ordersDetails = newDatas;
+      console.log('setOrders', state.ordersDetails);
     },
     removeOrder: (state, action) => {
       state.ordersDetails = state.ordersDetails.filter(

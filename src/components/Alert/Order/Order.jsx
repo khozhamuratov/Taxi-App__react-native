@@ -6,78 +6,7 @@ import {alertStyle} from './styles';
 
 import {Component} from 'react';
 import {connect} from 'react-redux';
-
-// type Props = {
-//   id: number;
-//   from: string;
-//   address: string;
-//   phoneNumber: string;
-//   to: string;
-// };
-
-// const Order = (props: Props) => {
-//   const [counter, setCounter] = useState(15);
-//   const {isAlert} = useAppSelector(select => select.isAlert);
-//   const dispatch = useAppDispatch();
-
-//   const acceptOrder = () => {
-//     dispatch(orderAlert(false));
-//     send({type: 'asdadsd'});
-//     dispatch(removeOrder(props.id));
-//   };
-//   const rejectOrder = () => {
-//     dispatch(orderAlert(false));
-//     dispatch(removeOrder(props.id));
-//   };
-
-//   useEffect(() => {
-//     if (isAlert) {
-//       const interval = setInterval(() => {
-//         setCounter(prevSeconds => {
-//           if (prevSeconds === 1) {
-//             clearInterval(interval);
-//             dispatch(orderAlert(false));
-//             dispatch(removeOrder(props.id));
-//           }
-//           return prevSeconds - 1;
-//         });
-//       }, 1000);
-//       return () => clearInterval(interval);
-//     }
-//   }, [isAlert]);
-
-//   return (
-//     <View style={[alertStyle.container, !isAlert ? {display: 'none'} : {}]}>
-//       <View style={alertStyle.alertHeader}>
-//         <Text style={alertStyle.orderTitle}>Новый заказ:</Text>
-//         <View style={alertStyle.alertCounter}>
-//           <Text style={alertStyle.alertCounterTxt}>{counter}</Text>
-//         </View>
-//       </View>
-//       <View style={alertStyle.orderDetail}>
-//         <Text style={alertStyle.text}>
-//           {props.from} {props.to}
-//         </Text>
-//         <Text style={alertStyle.text}>Адрес: {props.address}</Text>
-//         <Text style={alertStyle.text}>Номер: {props.phoneNumber}</Text>
-//       </View>
-//       <View style={alertStyle.buttons}>
-//         <TouchableOpacity
-//           onPress={() => acceptOrder()}
-//           style={alertStyle.button}>
-//           <Text style={alertStyle.buttonTxt}>Принять</Text>
-//         </TouchableOpacity>
-//         <TouchableOpacity
-//           onPress={() => rejectOrder()}
-//           style={[alertStyle.button, {backgroundColor: '#EF4040'}]}>
-//           <Text style={alertStyle.buttonTxt}>Отклонить</Text>
-//         </TouchableOpacity>
-//       </View>
-//     </View>
-//   );
-// };
-
-// export default Order;
+import LocalNotification from '../../../localNotifications';
 
 class Test {
   constructor(dispatch, id) {
@@ -110,6 +39,7 @@ class Alert extends Component {
   }
   componentDidMount() {
     if (this.props.isAlert.isAlert === true) {
+      LocalNotification(this.props.address);
       this.setState(prevState => ({
         isAlertShown: true,
       }));
@@ -119,8 +49,6 @@ class Alert extends Component {
           this.setState(prevState => ({
             isAlertShown: false,
           }));
-          console.log(this.state.isAlertShown);
-          // this.props.dispatch(removeOrder(this.props.id));
         }
 
         this.setState(prevState => ({
@@ -135,7 +63,12 @@ class Alert extends Component {
     const {from} = this.props;
     const {to} = this.props;
     const {address} = this.props;
-    const {phoneNumber} = this.props;
+    const {client} = this.props;
+    const {passengers} = this.props;
+    const cityKeys = {
+      NK: 'Нукус',
+      SB: 'Шымбай',
+    };
 
     this.tst = new Test(this.props.dispatch, id);
 
@@ -153,10 +86,11 @@ class Alert extends Component {
         </View>
         <View style={alertStyle.orderDetail}>
           <Text style={alertStyle.text}>
-            {from} {to}
+            {cityKeys[from]} {'->'} {cityKeys[to]}
           </Text>
           <Text style={alertStyle.text}>Адрес: {address}</Text>
-          <Text style={alertStyle.text}>Номер: {phoneNumber}</Text>
+          <Text style={alertStyle.text}>Пассажиров: {passengers}</Text>
+          <Text style={alertStyle.text}>Номер: {client.phone_number}</Text>
         </View>
         <View style={alertStyle.buttons}>
           <TouchableOpacity

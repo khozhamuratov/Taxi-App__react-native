@@ -1,6 +1,6 @@
 import PushNotification from 'react-native-push-notification';
 
-const LocalNotification = () => {
+const LocalNotification = message => {
   const key = Date.now().toString(); // Key must be unique everytime
   PushNotification.createChannel(
     {
@@ -14,8 +14,8 @@ const LocalNotification = () => {
   );
   PushNotification.localNotification({
     channelId: key, //this must be same with channelid in createchannel
-    title: 'Local Message',
-    message: 'Local message !!',
+    title: 'Примите заказ',
+    message: message,
     soundName: './sound.mp3',
   });
 };

@@ -34,49 +34,7 @@ const WorkPage = props => {
   const {websocket} = useAppSelector(select => select.websocket);
   const [ws, setWs] = useState(null);
 
-  // useEffect(() => {
-  //   const connectWs = WebSocketManager();
-  //   setWs(connectWs);
-
-  //   return () => {
-  //     if (ws) {
-  //       ws.close();
-  //     }
-  //   };
-  // }, []);
-
   const handleJoinLine = async () => {
-    // const connectWs = WebSocketManager();
-    // dispatch(setWebsocket(connectWs));
-    // connectWs.onopen = () => {
-    //   setWs(connectWs);
-    //   setStartWork(!startWork);
-    //   connectWs.send(
-    //     JSON.stringify({
-    //       type: 'join_line',
-    //       from_city: value,
-    //       to_city: valueSecond,
-    //     }),
-    //   );
-    // };
-    // connectWs.onmessage = e => {
-    //   if ('line' in JSON.parse(e.data)) {
-    //     dispatch(listUsers(JSON.parse(e.data).line));
-    //     console.log('line', e.data);
-    //   } else {
-    //     dispatch(orderAlert(true));
-    //     dispatch(setOrdersDetail(JSON.parse(e.data)));
-    //     console.log('Order', e.data);
-    //   }
-    // };
-    // if (connectWs) {
-    //   connectWs.onerror = error => {
-    //     console.error('WebSocket error', error);
-    //   };
-    // }
-    // websocket.onclose = () => {
-    //   console.log('WebSocket connection closed');
-    // };
     const socket = await connect('ws://192.168.100.8:8080');
 
     socket.onopen = () => {
@@ -100,8 +58,9 @@ const WorkPage = props => {
         dispatch(orderAlert(true));
         dispatch(setOrdersDetail(JSON.parse(e.data).order));
         console.log('Order', e.data);
-      } else {
-        console.log(e.data);
+        console.log('on message');
+      } else if (JSON.parse(e.data).type === 'accepted') {
+        dispatch(listUsers(''));
       }
     };
   };
