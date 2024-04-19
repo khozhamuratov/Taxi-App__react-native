@@ -1,7 +1,5 @@
-import {Dimensions, StyleSheet} from 'react-native';
-
-const height = Dimensions.get('screen').height;
-const width = Dimensions.get('screen').width;
+import {StyleSheet} from 'react-native';
+import {height, width} from '../../../styles';
 
 export const driverStyles = StyleSheet.create({
   pageTitle: {

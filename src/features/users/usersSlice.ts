@@ -16,6 +16,7 @@ interface UsersState {
   isWork: boolean;
   isAlert: boolean;
   ordersDetails: any[];
+  themeColor: string;
 }
 
 const initialState: UsersState = {
@@ -34,6 +35,7 @@ const initialState: UsersState = {
   isWork: false,
   isAlert: false,
   ordersDetails: [],
+  themeColor: '',
 };
 
 export const usersSlice = createSlice({
@@ -80,15 +82,9 @@ export const usersSlice = createSlice({
         item => item.id !== action.payload,
       );
     },
-  },
-  extraReducers: builder => {
-    // builder
-    // 	.addCase(fetchAllCountries.fulfilled, (state, action) => {
-    // 		state.countries = action.payload
-    // 	})
-    // 	.addCase(fetchAllCountries.rejected, state => {
-    // 		state.countries = []
-    // 	})
+    themeToggler: (state, action) => {
+      state.themeColor = action.payload;
+    },
   },
 });
 
@@ -103,5 +99,6 @@ export const {
   orderAlert,
   setOrdersDetail,
   removeOrder,
+  themeToggler,
 } = usersSlice.actions;
 export default usersSlice.reducer;

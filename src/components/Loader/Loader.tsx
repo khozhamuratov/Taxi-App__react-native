@@ -1,5 +1,5 @@
 import React from 'react';
-import {ActivityIndicator, View} from 'react-native';
+import {Image, View} from 'react-native';
 import {height, width} from '../../styles';
 
 type Props = {};
@@ -15,7 +15,14 @@ const Loader = (props: Props) => {
         justifyContent: 'center',
         backgroundColor: 'rgba(34,34,34,0.95)',
       }}>
-      <ActivityIndicator size={'large'} color={'gray'} />
+      <Image
+        style={{
+          width: 90,
+          height: 90,
+          objectFit: 'scale-down',
+        }}
+        source={require('./logo.png')}
+      />
     </View>
   );
 };

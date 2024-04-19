@@ -1,32 +1,11 @@
 import React from 'react';
 import {Text, TouchableOpacity, View} from 'react-native';
-import {orderAlert, removeOrder} from '../../../features/users/usersSlice';
-import {send} from '../../../websocketMiddlware';
 import {alertStyle} from './styles';
 
 import {Component} from 'react';
 import {connect} from 'react-redux';
 import LocalNotification from '../../../localNotifications';
-
-class Test {
-  constructor(dispatch, id) {
-    this.dispatch = dispatch;
-    this.id = id;
-  }
-
-  acceptOrder = () => {
-    this.dispatch(orderAlert(false));
-    send({type: 'accept', order_id: `${this.id}`});
-    this.dispatch(removeOrder(this.id));
-    console.log('orderId', this.id);
-  };
-  rejectOrder = () => {
-    this.dispatch(orderAlert(false));
-    this.dispatch(removeOrder(this.id));
-  };
-}
-
-connect()(Test);
+import {OrderActions} from './utils';
 
 class Alert extends Component {
   constructor(props) {
@@ -40,7 +19,7 @@ class Alert extends Component {
   componentDidMount() {
     if (this.props.isAlert.isAlert === true) {
       LocalNotification(this.props.address);
-      this.setState(prevState => ({
+      this.setState(() => ({
         isAlertShown: true,
       }));
       this.interval = setInterval(() => {
@@ -59,18 +38,13 @@ class Alert extends Component {
   }
 
   render() {
-    const {id} = this.props;
-    const {from} = this.props;
-    const {to} = this.props;
-    const {address} = this.props;
-    const {client} = this.props;
-    const {passengers} = this.props;
+    const {id, from, to, address, client, passengers} = this.props;
     const cityKeys = {
       NK: 'Нукус',
       SB: 'Шымбай',
     };
 
-    this.tst = new Test(this.props.dispatch, id);
+    this.tst = new OrderActions(this.props.dispatch, id);
 
     return (
       <View

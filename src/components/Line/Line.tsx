@@ -1,13 +1,31 @@
-import React from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {selected, selectedDriver} from '../../features/users/usersSlice';
+import React, {useEffect} from 'react';
+import {Text, TouchableOpacity, View} from 'react-native';
+import {
+  listUsers,
+  selected,
+  selectedDriver,
+} from '../../features/users/usersSlice';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 import {driverStyles} from './Driver/styles';
+
+const driverInfo = [
+  {
+    id: 1,
+    first_name: 'Polat',
+    last_name: 'Beknazarov',
+    car_number: '95 F 245 HA',
+    passengers: 3,
+  },
+];
 
 const Line = () => {
   const {listDrivers} = useAppSelector(select => select.listUsers);
 
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(listUsers(driverInfo));
+  }, []);
 
   return (
     <>
@@ -58,5 +76,3 @@ const Line = () => {
 };
 
 export default Line;
-
-const styles = StyleSheet.create({});

@@ -1,21 +1,15 @@
 import React, {useEffect, useState} from 'react';
-import {
-  Dimensions,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {Text, TouchableOpacity, View} from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import {Dropdown} from 'react-native-element-dropdown';
-import {headerStyles} from '../../components/Header/styles';
 import {
   listUsers,
   orderAlert,
   setOrdersDetail,
 } from '../../features/users/usersSlice';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
-import {connect} from '../../websocketMiddlware';
+import {headerStyles, width} from '../../styles';
+import {connect, send} from '../../websocketMiddlware';
 import {orderStyle} from '../ClientsPage/styles';
 import {WorkPageStyles} from './styles';
 
@@ -30,12 +24,12 @@ const WorkPage = props => {
   const [isFocus, setIsFocus] = useState(false);
   const [startWork, setStartWork] = useState(false);
   const dispatch = useAppDispatch();
-  const {listDrivers} = useAppSelector(select => select.listUsers);
-  const {websocket} = useAppSelector(select => select.websocket);
   const [ws, setWs] = useState(null);
 
+  const {themeColor} = useAppSelector(select => select.themeColor);
+
   const handleJoinLine = async () => {
-    const socket = await connect('ws://192.168.100.8:8080');
+    const socket = await connect('wss://api.1s-taxi.uz/ws/');
 
     socket.onopen = () => {
       setWs(socket);
@@ -54,17 +48,27 @@ const WorkPage = props => {
       if ('line' in JSON.parse(e.data)) {
         dispatch(listUsers(JSON.parse(e.data).line));
         console.log('line', e.data);
+        setError(false);
       } else if ('order' in JSON.parse(e.data)) {
         dispatch(orderAlert(true));
         dispatch(setOrdersDetail(JSON.parse(e.data).order));
         console.log('Order', e.data);
         console.log('on message');
-      } else if (JSON.parse(e.data).type === 'accepted') {
+        setError(false);
+      } else if (JSON.parse(e.data).type === 'completed') {
         dispatch(listUsers(''));
+        ws?.close();
+        setError(false);
+        setStartWork(false);
       }
+    };
+
+    socket.onerror = e => {
+      setError(true);
     };
   };
   const [appVersion, setAppVersion] = useState('');
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     async function fetchAppVersion() {
@@ -76,6 +80,7 @@ const WorkPage = props => {
   }, []);
   const handleOutLine = () => {
     if (ws) {
+      send({type: 'work_completed'});
       setStartWork(!startWork);
       ws.close();
       dispatch(listUsers({}));
@@ -88,14 +93,19 @@ const WorkPage = props => {
         <View style={headerStyles.header}>
           <Text style={orderStyle.pageTitle}>Выберите маршрут</Text>
         </View>
-        <View style={styles.dropdowns}>
+        <View style={WorkPageStyles.dropdowns}>
           <View>
-            <Text style={styles.dropdownTxt}>Укажите ваш текущий город</Text>
+            <Text style={WorkPageStyles.dropdownTxt}>
+              Укажите ваш текущий город
+            </Text>
             <Dropdown
-              style={[styles.dropdown, isFocus && {borderColor: 'gray'}]}
-              selectedTextStyle={styles.selectedTextStyle}
-              iconStyle={styles.iconStyle}
-              itemTextStyle={styles.itemStyle}
+              style={[
+                WorkPageStyles.dropdown,
+                isFocus && {borderColor: 'gray'},
+              ]}
+              selectedTextStyle={WorkPageStyles.selectedTextStyle}
+              iconStyle={WorkPageStyles.iconStyle}
+              itemTextStyle={WorkPageStyles.itemStyle}
               containerStyle={{
                 backgroundColor: '#212121',
                 borderWidth: 0,
@@ -119,14 +129,17 @@ const WorkPage = props => {
             />
           </View>
           <View>
-            <Text style={styles.dropdownTxt}>
+            <Text style={WorkPageStyles.dropdownTxt}>
               Выберите город, куда вам нужно доехать
             </Text>
             <Dropdown
-              style={[styles.dropdown, isFocus && {borderColor: 'gray'}]}
-              selectedTextStyle={styles.selectedTextStyle}
-              iconStyle={styles.iconStyle}
-              itemTextStyle={styles.itemStyle}
+              style={[
+                WorkPageStyles.dropdown,
+                isFocus && {borderColor: 'gray'},
+              ]}
+              selectedTextStyle={WorkPageStyles.selectedTextStyle}
+              iconStyle={WorkPageStyles.iconStyle}
+              itemTextStyle={WorkPageStyles.itemStyle}
               containerStyle={{
                 backgroundColor: '#212121',
                 borderWidth: 0,
@@ -149,10 +162,24 @@ const WorkPage = props => {
               }}
             />
           </View>
+          {error && (
+            <Text
+              style={{
+                width: width - 100,
+                fontSize: 12,
+                marginTop: 10,
+                color: '#EF4040',
+              }}>
+              Произошла ошибка. Попробуйте ещё раз
+            </Text>
+          )}
           <TouchableOpacity
             onPress={() => (startWork ? handleOutLine() : handleJoinLine())}
-            style={[styles.button, startWork && {backgroundColor: '#EF4040'}]}>
-            <Text style={styles.btnTxt}>
+            style={[
+              WorkPageStyles.button,
+              startWork && {backgroundColor: '#EF4040'},
+            ]}>
+            <Text style={WorkPageStyles.btnTxt}>
               {startWork ? 'Завершить работу' : 'Начать работу'}
             </Text>
           </TouchableOpacity>
@@ -172,107 +199,3 @@ const WorkPage = props => {
 };
 
 export default WorkPage;
-
-const width = Dimensions.get('screen').width;
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#141414',
-    padding: 16,
-  },
-  btnTxt: {
-    color: '#FFF',
-    fontWeight: '600',
-  },
-  button: {
-    width: width - 30,
-    backgroundColor: '#212121',
-    paddingVertical: 10,
-    alignItems: 'center',
-    borderRadius: 10,
-  },
-  dropdowns: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 20,
-    marginTop: 30,
-  },
-  dropdownTxt: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#FFF',
-    marginBottom: 10,
-  },
-  dropdown: {
-    height: 50,
-    borderColor: 'gray',
-    borderWidth: 0.5,
-    borderRadius: 8,
-    paddingHorizontal: 8,
-  },
-  itemStyle: {
-    color: '#CCC',
-  },
-  icon: {
-    marginRight: 5,
-  },
-  selectedTextStyle: {
-    fontSize: 16,
-    color: '#FFF',
-    fontWeight: '500',
-  },
-  iconStyle: {
-    width: 20,
-    height: 20,
-  },
-});
-
-// import React, {Component} from 'react';
-// import {Text, View} from 'react-native';
-
-// class WorkPage extends Component {
-//   constructor(props) {
-//     super(props);
-//     // Установите URL вашего WebSocket сервера
-//     this.socket = new WebSocket(
-//       (uri = 'ws://192.168.100.8:8080'),
-//       (options = []),
-//       {
-//         headers: {
-//           Authorization:
-//             'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzEyNzYwNjQ2LCJpYXQiOjE3MTIzMjg2NDYsImp0aSI6IjBmYjhjOGFkMDllNzRhMWJhYmY5MDAyYTU4MGVkMjg0IiwidXNlcl9pZCI6M30.S0F2e3Gv9t0bfdPNDxPi1tvsJUkBHzWksf7OVo5t-YA',
-//         },
-//       },
-//     );
-
-//     // Слушайте событие открытия соединения
-//     this.socket.onopen = () => {
-//       console.log('WebSocket connected');
-//     };
-
-//     // Слушайте событие получения сообщения
-//     this.socket.onmessage = e => {
-//       console.log('Received message: ', e.data);
-//     };
-
-//     // Слушайте событие закрытия соединения
-//     this.socket.onclose = () => {
-//       console.log('WebSocket closed');
-//     };
-
-//     // Слушайте событие ошибки соединения
-//     this.socket.onerror = e => {
-//       console.log('WebSocket error: ', e.message);
-//     };
-//   }
-
-//   render() {
-//     return (
-//       <View>
-//         <Text>React Native WebSocket Example</Text>
-//       </View>
-//     );
-//   }
-// }
-
-// export default WorkPage;

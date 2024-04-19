@@ -3,9 +3,8 @@ import axios from 'axios';
 
 const authenticate = async (username, password) => {
   try {
-    // Выполните запрос на сервер для аутентификации
     const response = await axios.post(
-      'http://192.168.100.8:8080/auth/jwt/create',
+      'https://api.1s-taxi.uz/auth/jwt/create',
       {
         username,
         password,
@@ -13,7 +12,6 @@ const authenticate = async (username, password) => {
     );
     const token = response.data;
 
-    // Сохраните токен в AsyncStorage
     await AsyncStorage.setItem('access', token['access']);
     await AsyncStorage.setItem('refresh', token['refresh']);
 

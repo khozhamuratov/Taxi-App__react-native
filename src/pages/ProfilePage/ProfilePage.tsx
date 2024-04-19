@@ -4,9 +4,11 @@ import React, {useEffect, useRef, useState} from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Appearance,
   Dimensions,
   SafeAreaView,
   ScrollView,
+  Switch,
   Text,
   TouchableHighlight,
   View,
@@ -15,24 +17,15 @@ import DeviceInfo from 'react-native-device-info';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {useDispatch} from 'react-redux';
-import {headerStyles} from '../../components/Header/styles';
-import {logout} from '../../features/users/usersSlice';
+import {logout, themeToggler} from '../../features/users/usersSlice';
+import {useAppSelector} from '../../redux/hooks';
+import {headerStyles, lightTheme} from '../../styles';
 import HistoryPage from '../ClientsPage/HistoryPage';
 import {orderStyle} from '../ClientsPage/styles';
 import FeedBackPage from '../FeedbackPage/FeedBackPage';
 import {ProfileStyles} from './styles';
 
 const height = Dimensions.get('screen').height;
-
-const driverProfileData = {
-  id: 5,
-  first_name: 'Владимир',
-  last_name: 'Иосифович',
-  car_number: '95 G 411 GA',
-  phoneNumber: '+998 91 303 71 13',
-  passengers: 0,
-  balance: 25000,
-};
 
 interface UserData {
   balance: string;
@@ -75,42 +68,80 @@ const ProfilePage = () => {
       },
     ]);
   };
+
+  const profile = {
+    balance: '25000',
+    first_name: 'Polat',
+    id: 2,
+    last_name: 'Beknazarov',
+    passengers_count: 4,
+    phone_number: '+998933640767',
+    username: '95 X 245 HA',
+  };
+
   const [appVersion, setAppVersion] = useState('');
   const [profileData, setProfileData] = useState<UserData | null>(null);
   const [historyData, setHistoryData] = useState<UserData | null>(null);
-  const refRBSheet = useRef();
-  const refRBSheet2 = useRef();
+  const refRBSheet: React.MutableRefObject<any> = useRef();
+  const refRBSheet2: React.MutableRefObject<any> = useRef();
 
-  const getHistoryData = (token: any, user_id: string) => {
+  const getHistoryData = (token: any) => {
     axios
-      .get(`http://192.168.100.8:8080/api/v1/order/${user_id}`, {
+      .get(`https://api.1s-taxi.uz/api/v1/orders/history/`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
       .then(res => {
         setHistoryData(res.data);
+        console.log(res.data);
       })
       .catch(err => console.log(err));
   };
+
+  const [isEnabled, setIsEnabled] = useState(false);
+
+  const {themeColor} = useAppSelector(select => select.themeColor);
+
+  const toggleSwitch = () => {
+    isEnabled
+      ? dispatch(themeToggler('light'))
+      : dispatch(themeToggler('dark'));
+
+    console.log(themeColor);
+    setIsEnabled(previousState => !previousState);
+  };
+
+  useEffect(() => {
+    const colorScheme = Appearance.getColorScheme();
+    dispatch(themeToggler(colorScheme));
+
+    if (colorScheme === 'dark') {
+      setIsEnabled(true); // true means dark
+    } else {
+      setIsEnabled(false); // false means light
+    }
+  }, []);
+
   useEffect(() => {
     async function fetchApp() {
       const version = DeviceInfo.getVersion();
       const token = await AsyncStorage.getItem('access');
+      setProfileData(profile);
       setAppVersion(version);
-      axios
-        .get('http://192.168.100.8:8080/auth/users/me', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then(res => {
-          setProfileData(res.data);
-          if (res.data) {
-            getHistoryData(token, res.data.id);
-          }
-        })
-        .catch(err => console.log(err));
+      // axios
+      //   .get('https://api.1s-taxi.uz/auth/users/me', {
+      //     headers: {
+      //       Authorization: `Bearer ${token}`,
+      //     },
+      //   })
+      //   .then(res => {
+      //     setProfileData(res.data);
+      //     if (res.data) {
+      //       getHistoryData(token);
+      //     }
+      //   })
+      //   .catch(err => console.log(err));
     }
 
     fetchApp();
@@ -124,22 +155,49 @@ const ProfilePage = () => {
         height: height - 85,
       }}>
       <View>
-        <View style={headerStyles.header}>
-          <Text style={orderStyle.pageTitle}>Профиль</Text>
+        <View
+          style={[
+            headerStyles.header,
+            themeColor === 'light' && lightTheme.lightBg,
+          ]}>
+          <Text
+            style={[
+              orderStyle.pageTitle,
+              themeColor === 'light' && lightTheme.lightText,
+            ]}>
+            Профиль
+          </Text>
         </View>
         <View style={ProfileStyles.container}>
           <View style={ProfileStyles.userInfo}>
-            <Icon name="person-circle" size={80} color={'white'} />
+            <Icon
+              size={100}
+              color={themeColor === 'dark' ? 'white' : 'black'}
+              name="person-circle"
+            />
             <View style={ProfileStyles.userData}>
               {profileData ? (
                 <>
-                  <Text style={[ProfileStyles.title, {marginBottom: 10}]}>
+                  <Text
+                    style={[
+                      headerStyles.title,
+                      {marginBottom: 10},
+                      themeColor === 'light' && lightTheme.lightText,
+                    ]}>
                     {profileData.first_name} {profileData.last_name}
                   </Text>
-                  <Text style={ProfileStyles.carNumber}>
+                  <Text
+                    style={[
+                      ProfileStyles.carNumber,
+                      themeColor === 'light' && lightTheme.lightText,
+                    ]}>
                     {profileData.phone_number}
                   </Text>
-                  <Text style={ProfileStyles.carNumber}>
+                  <Text
+                    style={[
+                      ProfileStyles.carNumber,
+                      themeColor === 'light' && lightTheme.lightText,
+                    ]}>
                     {profileData.username}
                   </Text>
                 </>
@@ -159,13 +217,13 @@ const ProfilePage = () => {
               {profileData ? (
                 <>
                   <View style={ProfileStyles.card}>
-                    <Text style={[ProfileStyles.title]}>
+                    <Text style={[headerStyles.title]}>
                       {Number(profileData.balance)}
                     </Text>
                     <Text style={{color: '#CCC'}}>Баланс</Text>
                   </View>
                   <View style={ProfileStyles.card}>
-                    <Text style={[ProfileStyles.title]}>
+                    <Text style={[headerStyles.title]}>
                       {profileData.passengers_count}
                     </Text>
                     <Text style={{color: '#CCC'}}>Клиентов</Text>
@@ -200,6 +258,15 @@ const ProfilePage = () => {
                   </View>
                 </TouchableHighlight>
               ))}
+              <View style={ProfileStyles.item}>
+                <Text style={ProfileStyles.itemTxt}>Тёмный режим</Text>
+                <Switch
+                  trackColor={{false: 'light', true: 'dark'}}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={toggleSwitch}
+                  value={isEnabled}
+                />
+              </View>
               <TouchableHighlight onPress={() => handleLogout()}>
                 <View style={ProfileStyles.item}>
                   <Text style={ProfileStyles.itemTxt}>Выйти</Text>
@@ -214,8 +281,6 @@ const ProfilePage = () => {
             height={600}
             closeOnPressBack={true}
             dragOnContent={false}
-            closeOnDragDown={false}
-            dragFromTopOnly={true}
             draggable={true}
             customStyles={{
               wrapper: {
@@ -245,8 +310,6 @@ const ProfilePage = () => {
             height={230}
             closeOnPressBack={true}
             dragOnContent={false}
-            closeOnDragDown={false}
-            dragFromTopOnly={true}
             draggable={true}
             customStyles={{
               wrapper: {

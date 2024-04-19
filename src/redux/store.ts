@@ -11,6 +11,7 @@ export const store = configureStore({
     websocket: usersSlice,
     isAlert: usersSlice,
     ordersDetails: usersSlice,
+    themeColor: usersSlice,
   },
 });
 

@@ -20,7 +20,6 @@ function App(): React.JSX.Element {
       <View style={alertStyle.container}>
         <Alert />
       </View>
-      {/* <Loader /> */}
     </Provider>
   );
 }

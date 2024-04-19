@@ -36,11 +36,6 @@ export const ProfileStyles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
   },
-  title: {
-    fontSize: 18,
-    color: 'white',
-    fontWeight: '600',
-  },
   properties: {
     display: 'flex',
     flexDirection: 'row',

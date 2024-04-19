@@ -1,4 +1,3 @@
-import {StyleSheet} from 'react-native';
 import {useAppSelector} from '../../redux/hooks';
 import Order from './Order/Order';
 
@@ -23,5 +22,3 @@ const Alert = () => {
 };
 
 export default Alert;
-
-const styles = StyleSheet.create({});

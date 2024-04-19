@@ -1,19 +1,21 @@
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React from 'react';
-import {StyleSheet, Text} from 'react-native';
+import {Text} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import MainPage from '../pages/MainPage/MainPage';
 import ProfilePage from '../pages/ProfilePage/ProfilePage';
 import WorkPage from '../pages/WorkPage/WorkPage';
+import {useAppSelector} from '../redux/hooks';
 import {tabStyles} from './styles';
 
 const Tab = createBottomTabNavigator();
 
 const Tabs = props => {
+  const {themeColor} = useAppSelector(select => select.themeColor);
   return (
     <Tab.Navigator
       sceneContainerStyle={{
-        backgroundColor: '#141414',
+        backgroundColor: themeColor === 'dark' ? '#141414' : '#FFF',
       }}
       screenOptions={{
         headerShown: false,
@@ -102,5 +104,3 @@ const Tabs = props => {
 };
 
 export default Tabs;
-
-const styles = StyleSheet.create({});

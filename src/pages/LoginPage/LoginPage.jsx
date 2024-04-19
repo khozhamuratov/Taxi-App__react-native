@@ -3,7 +3,6 @@ import React, {useEffect, useState} from 'react';
 import {Text, TextInput, TouchableOpacity, View} from 'react-native';
 import Loader from '../../components/Loader/Loader';
 import {logined} from '../../features/users/usersSlice';
-import authenticate from '../../init/authenticate';
 import isAuthenticated from '../../init/isAuthenticated';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 import {width} from '../../styles';
@@ -23,19 +22,19 @@ const LoginPage = () => {
 
   const handleLogin = async () => {
     setLoader(true);
-    try {
-      await authenticate(username, password);
-      isAuthenticated().then(authenticated => {
-        if (authenticated) {
-          dispatch(logined());
-          setLoader(false);
-        }
-      });
-    } catch (error) {
-      console.log(error);
-      setError(true);
-      setLoader(false);
-    }
+    // try {
+    //   await authenticate(username, password);
+    //   isAuthenticated().then(authenticated => {
+    //     if (authenticated) {
+    //       setLoader(false);
+    //     }
+    //   });
+    // } catch (error) {
+    //   console.log(error);
+    //   setError(true);
+    //   setLoader(false);
+    // }
+    dispatch(logined());
   };
 
   useEffect(() => {

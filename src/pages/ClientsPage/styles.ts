@@ -4,7 +4,6 @@ const width = Dimensions.get('screen').width;
 
 export const orderStyle = StyleSheet.create({
   clientPageContainer: {
-    // paddingTop: 20,
     marginHorizontal: 15,
   },
   headerBtns: {
