@@ -3,13 +3,10 @@ import axios from 'axios';
 
 const authenticate = async (username, password) => {
   try {
-    const response = await axios.post(
-      'https://api.1s-taxi.uz/auth/jwt/create',
-      {
-        username,
-        password,
-      },
-    );
+    const response = await axios.post('https://1s-taxi.uz/auth/jwt/create', {
+      username,
+      password,
+    });
     const token = response.data;
 
     await AsyncStorage.setItem('access', token['access']);

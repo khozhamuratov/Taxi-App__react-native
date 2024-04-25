@@ -34,7 +34,7 @@ export const driverStyles = StyleSheet.create({
   },
   userCarTxt: {
     fontSize: 12,
-    color: '#CCC',
+    color: 'gray',
   },
   userName: {
     display: 'flex',
@@ -49,17 +49,12 @@ export const driverStyles = StyleSheet.create({
   driverDetails: {
     position: 'absolute',
     width: width,
-    height: height,
-    backgroundColor: 'rgba(0,0,0,0.9)',
+    height: height - 150,
     alignItems: 'center',
     justifyContent: 'center',
   },
   driverWrapper: {
-    backgroundColor: '#222',
     paddingHorizontal: 15,
-    width: width - 50,
-    paddingVertical: 25,
-    borderRadius: 10,
   },
   button: {
     backgroundColor: '#414141',
@@ -77,6 +72,6 @@ export const driverStyles = StyleSheet.create({
   },
   span: {
     fontSize: 14,
-    color: '#CCC',
+    color: 'gray',
   },
 });

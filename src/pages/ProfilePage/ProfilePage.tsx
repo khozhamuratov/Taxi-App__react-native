@@ -4,13 +4,14 @@ import React, {useEffect, useRef, useState} from 'react';
 import {
   ActivityIndicator,
   Alert,
-  Appearance,
-  Dimensions,
   SafeAreaView,
   ScrollView,
+  StatusBar,
+  StatusBarStyle,
   Switch,
   Text,
-  TouchableHighlight,
+  TouchableOpacity,
+  useColorScheme,
   View,
 } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
@@ -21,11 +22,8 @@ import {logout, themeToggler} from '../../features/users/usersSlice';
 import {useAppSelector} from '../../redux/hooks';
 import {headerStyles, lightTheme} from '../../styles';
 import HistoryPage from '../ClientsPage/HistoryPage';
-import {orderStyle} from '../ClientsPage/styles';
 import FeedBackPage from '../FeedbackPage/FeedBackPage';
 import {ProfileStyles} from './styles';
-
-const height = Dimensions.get('screen').height;
 
 interface UserData {
   balance: string;
@@ -69,16 +67,6 @@ const ProfilePage = () => {
     ]);
   };
 
-  const profile = {
-    balance: '25000',
-    first_name: 'Polat',
-    id: 2,
-    last_name: 'Beknazarov',
-    passengers_count: 4,
-    phone_number: '+998933640767',
-    username: '95 X 245 HA',
-  };
-
   const [appVersion, setAppVersion] = useState('');
   const [profileData, setProfileData] = useState<UserData | null>(null);
   const [historyData, setHistoryData] = useState<UserData | null>(null);
@@ -102,72 +90,59 @@ const ProfilePage = () => {
   const [isEnabled, setIsEnabled] = useState(false);
 
   const {themeColor} = useAppSelector(select => select.themeColor);
+  const STYLES: StatusBarStyle[] = ['default', 'dark-content', 'light-content'];
+  const [statusBarStyle, setStatusBarStyle] = useState<StatusBarStyle>(
+    STYLES[0],
+  );
+
+  const colorScheme = useColorScheme();
 
   const toggleSwitch = () => {
-    isEnabled
-      ? dispatch(themeToggler('light'))
-      : dispatch(themeToggler('dark'));
-
-    console.log(themeColor);
+    if (isEnabled) {
+      dispatch(themeToggler('light'));
+      console.log(colorScheme);
+      setStatusBarStyle(STYLES[1]);
+    } else {
+      dispatch(themeToggler('dark'));
+      setStatusBarStyle(STYLES[2]);
+      console.log(themeColor);
+    }
     setIsEnabled(previousState => !previousState);
   };
-
-  useEffect(() => {
-    const colorScheme = Appearance.getColorScheme();
-    dispatch(themeToggler(colorScheme));
-
-    if (colorScheme === 'dark') {
-      setIsEnabled(true); // true means dark
-    } else {
-      setIsEnabled(false); // false means light
-    }
-  }, []);
 
   useEffect(() => {
     async function fetchApp() {
       const version = DeviceInfo.getVersion();
       const token = await AsyncStorage.getItem('access');
-      setProfileData(profile);
       setAppVersion(version);
-      // axios
-      //   .get('https://api.1s-taxi.uz/auth/users/me', {
-      //     headers: {
-      //       Authorization: `Bearer ${token}`,
-      //     },
-      //   })
-      //   .then(res => {
-      //     setProfileData(res.data);
-      //     if (res.data) {
-      //       getHistoryData(token);
-      //     }
-      //   })
-      //   .catch(err => console.log(err));
+      axios
+        .get('https://1s-taxi.uz/auth/users/me', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then(res => {
+          setProfileData(res.data);
+          if (res.data) {
+            getHistoryData(token);
+          }
+        })
+        .catch(err => console.log(err));
     }
+
+    themeColor === 'light'
+      ? setStatusBarStyle(STYLES[1])
+      : setStatusBarStyle(STYLES[2]);
+
+    themeColor === 'light' ? setIsEnabled(false) : setIsEnabled(true);
 
     fetchApp();
   }, []);
 
   return (
-    <SafeAreaView
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        height: height - 85,
-      }}>
-      <View>
-        <View
-          style={[
-            headerStyles.header,
-            themeColor === 'light' && lightTheme.lightBg,
-          ]}>
-          <Text
-            style={[
-              orderStyle.pageTitle,
-              themeColor === 'light' && lightTheme.lightText,
-            ]}>
-            Профиль
-          </Text>
-        </View>
+    <SafeAreaView>
+      <StatusBar barStyle={statusBarStyle} />
+      <ScrollView showsVerticalScrollIndicator={false}>
         <View style={ProfileStyles.container}>
           <View style={ProfileStyles.userInfo}>
             <Icon
@@ -206,7 +181,7 @@ const ProfilePage = () => {
               )}
             </View>
           </View>
-          <ScrollView style={ProfileStyles.itemsContainer}>
+          <View style={ProfileStyles.itemsContainer}>
             <View
               style={{
                 display: 'flex',
@@ -217,16 +192,24 @@ const ProfilePage = () => {
               {profileData ? (
                 <>
                   <View style={ProfileStyles.card}>
-                    <Text style={[headerStyles.title]}>
+                    <Text
+                      style={[
+                        headerStyles.title,
+                        themeColor === 'light' && lightTheme.lightText,
+                      ]}>
                       {Number(profileData.balance)}
                     </Text>
-                    <Text style={{color: '#CCC'}}>Баланс</Text>
+                    <Text style={{color: 'gray'}}>Баланс</Text>
                   </View>
                   <View style={ProfileStyles.card}>
-                    <Text style={[headerStyles.title]}>
+                    <Text
+                      style={[
+                        headerStyles.title,
+                        themeColor === 'light' && lightTheme.lightText,
+                      ]}>
                       {profileData.passengers_count}
                     </Text>
-                    <Text style={{color: '#CCC'}}>Клиентов</Text>
+                    <Text style={{color: 'gray'}}>Клиентов</Text>
                   </View>
                 </>
               ) : (
@@ -239,13 +222,13 @@ const ProfilePage = () => {
                   marginLeft: 15,
                   fontSize: 18,
                   fontWeight: '600',
-                  color: 'white',
+                  color: themeColor === 'light' ? '#141414' : 'white',
                   marginBottom: 15,
                 }}>
                 Действия
               </Text>
               {MenuItems.map((touch, index) => (
-                <TouchableHighlight
+                <TouchableOpacity
                   key={index}
                   onPress={() => {
                     touch.routeName === 'History'
@@ -253,28 +236,55 @@ const ProfilePage = () => {
                       : refRBSheet2.current.open();
                   }}>
                   <View style={ProfileStyles.item}>
-                    <Text style={ProfileStyles.itemTxt}>{touch.label}</Text>
-                    <Icon size={24} name={touch.icon} color={'white'} />
+                    <Text
+                      style={[
+                        ProfileStyles.itemTxt,
+                        themeColor === 'light' && lightTheme.lightText,
+                      ]}>
+                      {touch.label}
+                    </Text>
+                    <Icon
+                      size={24}
+                      name={touch.icon}
+                      color={themeColor === 'light' ? '#141414' : 'white'}
+                    />
                   </View>
-                </TouchableHighlight>
+                </TouchableOpacity>
               ))}
               <View style={ProfileStyles.item}>
-                <Text style={ProfileStyles.itemTxt}>Тёмный режим</Text>
+                <Text
+                  style={[
+                    ProfileStyles.itemTxt,
+                    themeColor === 'light' && lightTheme.lightText,
+                  ]}>
+                  Тёмный режим
+                </Text>
                 <Switch
-                  trackColor={{false: 'light', true: 'dark'}}
+                  trackColor={{false: '#767577', true: 'gray'}}
+                  thumbColor={isEnabled ? 'white' : '#141414'}
                   ios_backgroundColor="#3e3e3e"
                   onValueChange={toggleSwitch}
                   value={isEnabled}
                 />
               </View>
-              <TouchableHighlight onPress={() => handleLogout()}>
+              <TouchableOpacity onPress={() => handleLogout()}>
                 <View style={ProfileStyles.item}>
-                  <Text style={ProfileStyles.itemTxt}>Выйти</Text>
-                  <Icon size={24} name="log-out" color={'white'} />
+                  <Text
+                    style={[
+                      ProfileStyles.itemTxt,
+                      themeColor === 'light' && lightTheme.lightText,
+                    ]}>
+                    Выйти
+                  </Text>
+                  <Icon
+                    size={24}
+                    name="log-out"
+                    color={themeColor === 'light' ? '#141414' : 'white'}
+                  />
                 </View>
-              </TouchableHighlight>
+              </TouchableOpacity>
             </View>
-          </ScrollView>
+          </View>
           <RBSheet
             ref={refRBSheet}
             useNativeDriver={false}
@@ -287,16 +297,25 @@ const ProfilePage = () => {
                 backgroundColor: 'transparent',
               },
               draggableIcon: {
-                backgroundColor: '#FFF',
+                backgroundColor: themeColor === 'light' ? '#000' : '#fff',
               },
               container: {
                 borderTopLeftRadius: 20,
                 borderTopRightRadius: 20,
-                backgroundColor: '#212121',
+                backgroundColor: themeColor === 'light' ? '#fff' : '#212121',
+                shadowColor: '#000',
+                shadowOffset: {
+                  width: 0,
+                  height: 2,
+                },
+                shadowOpacity: 0.25,
+                shadowRadius: 3.84,
+
+                elevation: 5,
               },
             }}
             customModalProps={{
-              animationType: 'slide',
+              animationType: 'fade',
               statusBarTranslucent: true,
             }}
             customAvoidingViewProps={{
@@ -316,16 +335,26 @@ const ProfilePage = () => {
                 backgroundColor: 'transparent',
               },
               draggableIcon: {
-                backgroundColor: '#FFF',
+                backgroundColor: themeColor === 'light' ? '#000' : '#fff',
               },
               container: {
                 borderTopLeftRadius: 20,
                 borderTopRightRadius: 20,
-                backgroundColor: '#212121',
+                backgroundColor: themeColor === 'light' ? '#fff' : '#212121',
+
+                shadowColor: '#000',
+                shadowOffset: {
+                  width: 0,
+                  height: 2,
+                },
+                shadowOpacity: 0.25,
+                shadowRadius: 3.84,
+
+                elevation: 5,
               },
             }}
             customModalProps={{
-              animationType: 'slide',
+              animationType: 'fade',
               statusBarTranslucent: true,
             }}
             customAvoidingViewProps={{
@@ -334,12 +363,7 @@ const ProfilePage = () => {
             <FeedBackPage />
           </RBSheet>
         </View>
-      </View>
-      <View style={{alignItems: 'center'}}>
-        <Text style={{color: 'gray', fontSize: 12}}>
-          Версия приложения {appVersion}
-        </Text>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };

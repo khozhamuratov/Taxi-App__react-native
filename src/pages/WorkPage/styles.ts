@@ -3,12 +3,11 @@ import {height, width} from '../../styles';
 
 export const WorkPageStyles = StyleSheet.create({
   container: {
-    backgroundColor: '#141414',
     width: width,
     height: height - 85,
     paddingHorizontal: 15,
     flexDirection: 'column',
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
   },
   btnTxt: {
     color: '#FFF',

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Text, TouchableOpacity, View} from 'react-native';
+import {SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import {Dropdown} from 'react-native-element-dropdown';
 import {
@@ -8,9 +8,8 @@ import {
   setOrdersDetail,
 } from '../../features/users/usersSlice';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
-import {headerStyles, width} from '../../styles';
+import {lightTheme, width} from '../../styles';
 import {connect, send} from '../../websocketMiddlware';
-import {orderStyle} from '../ClientsPage/styles';
 import {WorkPageStyles} from './styles';
 
 const data = [
@@ -29,7 +28,7 @@ const WorkPage = props => {
   const {themeColor} = useAppSelector(select => select.themeColor);
 
   const handleJoinLine = async () => {
-    const socket = await connect('wss://api.1s-taxi.uz/ws/');
+    const socket = await connect('wss://1s-taxi.uz/ws/');
 
     socket.onopen = () => {
       setWs(socket);
@@ -52,8 +51,6 @@ const WorkPage = props => {
       } else if ('order' in JSON.parse(e.data)) {
         dispatch(orderAlert(true));
         dispatch(setOrdersDetail(JSON.parse(e.data).order));
-        console.log('Order', e.data);
-        console.log('on message');
         setError(false);
       } else if (JSON.parse(e.data).type === 'completed') {
         dispatch(listUsers(''));
@@ -88,14 +85,15 @@ const WorkPage = props => {
   };
 
   return (
-    <View style={WorkPageStyles.container}>
-      <View>
-        <View style={headerStyles.header}>
-          <Text style={orderStyle.pageTitle}>Выберите маршрут</Text>
-        </View>
+    <SafeAreaView>
+      <View style={WorkPageStyles.container}>
         <View style={WorkPageStyles.dropdowns}>
           <View>
-            <Text style={WorkPageStyles.dropdownTxt}>
+            <Text
+              style={[
+                WorkPageStyles.dropdownTxt,
+                themeColor === 'light' && lightTheme.lightText,
+              ]}>
               Укажите ваш текущий город
             </Text>
             <Dropdown
@@ -103,11 +101,17 @@ const WorkPage = props => {
                 WorkPageStyles.dropdown,
                 isFocus && {borderColor: 'gray'},
               ]}
-              selectedTextStyle={WorkPageStyles.selectedTextStyle}
+              selectedTextStyle={[
+                WorkPageStyles.selectedTextStyle,
+                themeColor === 'light' && lightTheme.lightText,
+              ]}
               iconStyle={WorkPageStyles.iconStyle}
-              itemTextStyle={WorkPageStyles.itemStyle}
+              itemTextStyle={[
+                WorkPageStyles.itemStyle,
+                themeColor === 'light' && lightTheme.lightText,
+              ]}
               containerStyle={{
-                backgroundColor: '#212121',
+                backgroundColor: themeColor === 'light' ? 'white' : '#141414',
                 borderWidth: 0,
                 marginTop: 4,
                 borderRadius: 10,
@@ -119,7 +123,7 @@ const WorkPage = props => {
               valueField="value"
               placeholder={!isFocus ? 'Из' : '...'}
               value={value}
-              activeColor="#414141"
+              activeColor={themeColor === 'light' ? '#f1f1f1' : '#414141'}
               onFocus={() => setIsFocus(true)}
               onBlur={() => setIsFocus(false)}
               onChange={item => {
@@ -129,7 +133,11 @@ const WorkPage = props => {
             />
           </View>
           <View>
-            <Text style={WorkPageStyles.dropdownTxt}>
+            <Text
+              style={[
+                WorkPageStyles.dropdownTxt,
+                themeColor === 'light' && lightTheme.lightText,
+              ]}>
               Выберите город, куда вам нужно доехать
             </Text>
             <Dropdown
@@ -137,11 +145,17 @@ const WorkPage = props => {
                 WorkPageStyles.dropdown,
                 isFocus && {borderColor: 'gray'},
               ]}
-              selectedTextStyle={WorkPageStyles.selectedTextStyle}
+              selectedTextStyle={[
+                WorkPageStyles.selectedTextStyle,
+                themeColor === 'light' && lightTheme.lightText,
+              ]}
               iconStyle={WorkPageStyles.iconStyle}
-              itemTextStyle={WorkPageStyles.itemStyle}
+              itemTextStyle={[
+                WorkPageStyles.itemStyle,
+                themeColor === 'light' && lightTheme.lightText,
+              ]}
               containerStyle={{
-                backgroundColor: '#212121',
+                backgroundColor: themeColor === 'light' ? 'white' : '#141414',
                 borderWidth: 0,
                 marginTop: 4,
                 borderRadius: 10,
@@ -153,7 +167,7 @@ const WorkPage = props => {
               valueField="value"
               placeholder={!isFocus ? 'В' : '...'}
               value={valueSecond}
-              activeColor="#414141"
+              activeColor={themeColor === 'light' ? '#f1f1f1' : '#414141'}
               onFocus={() => setIsFocus(true)}
               onBlur={() => setIsFocus(false)}
               onChange={item => {
@@ -184,17 +198,12 @@ const WorkPage = props => {
             </Text>
           </TouchableOpacity>
         </View>
-        <Text style={{marginTop: 20, fontSize: 12, color: '#CCC'}}>
+        <Text style={{marginTop: 20, fontSize: 12, color: 'gray'}}>
           *Не забудьте завершить работу, когда наберете нужное количество
           пассажиров
         </Text>
       </View>
-      <View style={{alignItems: 'center'}}>
-        <Text style={{color: 'gray', fontSize: 12}}>
-          Версия приложения {appVersion}
-        </Text>
-      </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

@@ -1,3 +1,4 @@
+import {View} from 'react-native';
 import {useAppSelector} from '../../redux/hooks';
 import Order from './Order/Order';
 
@@ -5,7 +6,7 @@ const Alert = () => {
   const {ordersDetails} = useAppSelector(select => select.ordersDetails);
 
   return (
-    <>
+    <View style={{paddingHorizontal: 5, gap: 10}}>
       {ordersDetails.map((order, index) => (
         <Order
           key={index}
@@ -17,7 +18,7 @@ const Alert = () => {
           passengers={order.passengers}
         />
       ))}
-    </>
+    </View>
   );
 };
 

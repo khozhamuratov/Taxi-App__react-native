@@ -1,12 +1,9 @@
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import React from 'react';
-import {Text} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import MainPage from '../pages/MainPage/MainPage';
 import ProfilePage from '../pages/ProfilePage/ProfilePage';
 import WorkPage from '../pages/WorkPage/WorkPage';
 import {useAppSelector} from '../redux/hooks';
-import {tabStyles} from './styles';
 
 const Tab = createBottomTabNavigator();
 
@@ -15,90 +12,47 @@ const Tabs = props => {
   return (
     <Tab.Navigator
       sceneContainerStyle={{
-        backgroundColor: themeColor === 'dark' ? '#141414' : '#FFF',
+        backgroundColor: themeColor === 'dark' ? '#141414' : '#fff',
       }}
-      screenOptions={{
-        headerShown: false,
-        tabBarShowLabel: false,
-        tabBarActiveTintColor: '#17161b',
+      screenOptions={({route}) => ({
+        headerTitleAlign: 'center',
+        headerShadowVisible: false,
+        headerTintColor: themeColor === 'dark' ? 'white' : '#141414',
+        tabBarActiveTintColor: themeColor === 'dark' ? 'white' : '#212121',
+        tabBarInactiveTintColor: 'gray',
         tabBarStyle: {
-          height: 60,
-          backgroundColor: '#222222',
-          borderTopWidth: 0,
+          display: 'flex',
+          borderTopWidth: 0.5,
+          borderTopColor: themeColor === 'dark' ? '#00000000' : '#CCC',
+          backgroundColor: themeColor === 'light' ? 'white' : '#212121',
         },
-      }}>
-      <Tab.Screen
-        options={({route}) => ({
-          tabBarIcon: ({focused, color}) => {
-            if (route.name === 'Home') {
-              color = focused ? '#f1f1f3' : '#424242';
-            }
+        headerStyle: {
+          backgroundColor: themeColor === 'light' ? 'white' : '#141414',
+        },
+        tabBarIcon: ({focused, color, size}) => {
+          let iconName;
 
-            return (
-              <>
-                <Icon name="list-outline" size={30} color={color} />
-                <Text
-                  style={[
-                    tabStyles.tabTxt,
-                    focused ? tabStyles.focused : null,
-                  ]}>
-                  Очередь
-                </Text>
-              </>
-            );
-          },
-        })}
-        name="Home"
-        component={MainPage}
-      />
-      <Tab.Screen
-        options={({route}) => ({
-          tabBarIcon: ({focused, color}) => {
-            if (route.name === 'Work') {
-              color = focused ? '#f1f1f3' : '#424242';
-            }
+          if (route.name === 'Очередь') {
+            iconName = focused ? 'list' : 'list';
+          } else if (route.name === 'Профиль') {
+            iconName = focused ? 'person' : 'person';
+          } else if (route.name === 'Работа') {
+            iconName = focused ? 'car' : 'car';
+          }
 
-            return (
-              <>
-                <Icon name="car" size={25} color={color} />
-                <Text
-                  style={[
-                    tabStyles.tabTxt,
-                    focused ? tabStyles.focused : null,
-                  ]}>
-                  Работа
-                </Text>
-              </>
-            );
-          },
-        })}
-        name="Work"
-        component={WorkPage}
-      />
-      <Tab.Screen
-        options={({route}) => ({
-          tabBarIcon: ({focused, color}) => {
-            if (route.name === 'Settings') {
-              color = focused ? '#f1f1f3' : '#424242';
-            }
-
-            return (
-              <>
-                <Icon name="person" size={25} color={color} />
-                <Text
-                  style={[
-                    tabStyles.tabTxt,
-                    focused ? tabStyles.focused : null,
-                  ]}>
-                  Профиль
-                </Text>
-              </>
-            );
-          },
-        })}
-        name="Settings"
-        component={ProfilePage}
-      />
+          return (
+            <Icon
+              style={{marginTop: 5}}
+              name={iconName}
+              size={size}
+              color={color}
+            />
+          );
+        },
+      })}>
+      <Tab.Screen name="Очередь" component={MainPage} />
+      <Tab.Screen name="Работа" component={WorkPage} />
+      <Tab.Screen name="Профиль" component={ProfilePage} />
     </Tab.Navigator>
   );
 };

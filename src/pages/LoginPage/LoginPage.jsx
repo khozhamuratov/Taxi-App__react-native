@@ -3,9 +3,10 @@ import React, {useEffect, useState} from 'react';
 import {Text, TextInput, TouchableOpacity, View} from 'react-native';
 import Loader from '../../components/Loader/Loader';
 import {logined} from '../../features/users/usersSlice';
+import authenticate from '../../init/authenticate';
 import isAuthenticated from '../../init/isAuthenticated';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
-import {width} from '../../styles';
+import {lightTheme, width} from '../../styles';
 import {loginStyles} from './styles';
 
 const LoginPage = () => {
@@ -15,6 +16,7 @@ const LoginPage = () => {
   const dispatch = useAppDispatch();
 
   const {isLogined} = useAppSelector(select => select.isLogined);
+  const {themeColor} = useAppSelector(select => select.themeColor);
 
   const [loader, setLoader] = useState(false);
   const [error, setError] = useState(false);
@@ -22,19 +24,19 @@ const LoginPage = () => {
 
   const handleLogin = async () => {
     setLoader(true);
-    // try {
-    //   await authenticate(username, password);
-    //   isAuthenticated().then(authenticated => {
-    //     if (authenticated) {
-    //       setLoader(false);
-    //     }
-    //   });
-    // } catch (error) {
-    //   console.log(error);
-    //   setError(true);
-    //   setLoader(false);
-    // }
-    dispatch(logined());
+    try {
+      await authenticate(username, password);
+      isAuthenticated().then(authenticated => {
+        if (authenticated) {
+          setLoader(false);
+          dispatch(logined());
+        }
+      });
+    } catch (error) {
+      console.log(error);
+      setError(true);
+      setLoader(false);
+    }
   };
 
   useEffect(() => {
@@ -72,8 +74,18 @@ const LoginPage = () => {
   return (
     <>
       {!loader ? (
-        <View style={loginStyles.page}>
-          <Text style={loginStyles.title}>Авторизация</Text>
+        <View
+          style={[
+            loginStyles.page,
+            themeColor === 'light' && {backgroundColor: 'white'},
+          ]}>
+          <Text
+            style={[
+              loginStyles.title,
+              themeColor === 'light' && lightTheme.lightText,
+            ]}>
+            Авторизация
+          </Text>
           <TextInput
             editable
             numberOfLines={4}
@@ -81,7 +93,10 @@ const LoginPage = () => {
             placeholder="Введите номер машины"
             onChangeText={text => setUsername(text)}
             value={username}
-            style={loginStyles.input}
+            style={[
+              loginStyles.input,
+              themeColor === 'light' && {borderColor: 'gray'},
+            ]}
           />
           <View>
             <TextInput
@@ -93,7 +108,10 @@ const LoginPage = () => {
               password={visible}
               onChangeText={text => setPassword(text)}
               value={password}
-              style={loginStyles.input}
+              style={[
+                loginStyles.input,
+                themeColor === 'light' && {borderColor: 'gray'},
+              ]}
             />
             <TouchableOpacity
               onPress={() => setVisible(!visible)}
@@ -115,7 +133,6 @@ const LoginPage = () => {
             </Text>
           )}
           <TouchableOpacity
-            // onPress={() => dispatch(logined())}
             onPress={() => handleLogin()}
             style={loginStyles.button}>
             <Text style={{color: 'white', fontWeight: 500, fontSize: 14}}>
