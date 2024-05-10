@@ -4,28 +4,32 @@ import {alertStyle} from './styles';
 
 import {Component} from 'react';
 import {connect} from 'react-redux';
+import {removeOrder} from '../../../features/users/usersSlice';
 import LocalNotification from '../../../localNotifications';
 import {OrderActions} from './utils';
 
 class Alert extends Component {
-  constructor(props) {
+  constructor(props, dispatch) {
     super(props);
-
+    this.dispatch = dispatch;
     this.state = {
       counter: 15,
       isAlertShown: false,
     };
   }
   componentDidMount() {
-    if (this.props.isAlert.isAlert === true) {
-      LocalNotification(this.props.address);
+    const {dispatch, id, address, isAlert} = this.props;
+    if (isAlert.isAlert === true) {
+      LocalNotification(address);
       this.setState(() => ({
         isAlertShown: true,
       }));
       this.interval = setInterval(() => {
         if (this.state.counter === 1) {
           clearInterval(this.interval);
-          this.setState(prevState => ({
+          dispatch(removeOrder(id));
+          // this.tst.rejectOrder();
+          this.setState(() => ({
             isAlertShown: false,
           }));
         }
@@ -51,20 +55,59 @@ class Alert extends Component {
         style={[
           alertStyle.container,
           !this.state.isAlertShown ? {display: 'none'} : {},
+          this.props.isAlert.themeColor === 'light'
+            ? {backgroundColor: 'white'}
+            : {},
         ]}>
         <View style={alertStyle.alertHeader}>
-          <Text style={alertStyle.orderTitle}>Новый заказ:</Text>
+          <Text
+            style={[
+              alertStyle.orderTitle,
+              this.props.isAlert.themeColor === 'light' ? {color: 'black'} : {},
+            ]}>
+            Новый заказ:
+          </Text>
           <View style={alertStyle.alertCounter}>
-            <Text style={alertStyle.alertCounterTxt}>{this.state.counter}</Text>
+            <Text
+              style={[
+                alertStyle.alertCounterTxt,
+                this.props.isAlert.themeColor === 'light'
+                  ? {color: 'white'}
+                  : {},
+              ]}>
+              {this.state.counter}
+            </Text>
           </View>
         </View>
         <View style={alertStyle.orderDetail}>
-          <Text style={alertStyle.text}>
+          <Text
+            style={[
+              alertStyle.text,
+              this.props.isAlert.themeColor === 'light' ? {color: 'black'} : {},
+            ]}>
             {cityKeys[from]} {'->'} {cityKeys[to]}
           </Text>
-          <Text style={alertStyle.text}>Адрес: {address}</Text>
-          <Text style={alertStyle.text}>Пассажиров: {passengers}</Text>
-          <Text style={alertStyle.text}>Номер: {client.phone_number}</Text>
+          <Text
+            style={[
+              alertStyle.text,
+              this.props.isAlert.themeColor === 'light' ? {color: 'black'} : {},
+            ]}>
+            Адрес: <Text style={{fontWeight: '400'}}>{address}</Text>
+          </Text>
+          <Text
+            style={[
+              alertStyle.text,
+              this.props.isAlert.themeColor === 'light' ? {color: 'black'} : {},
+            ]}>
+            Пассажиров: {passengers}
+          </Text>
+          <Text
+            style={[
+              alertStyle.text,
+              this.props.isAlert.themeColor === 'light' ? {color: 'black'} : {},
+            ]}>
+            Номер: {client.phone_number}
+          </Text>
         </View>
         <View style={alertStyle.buttons}>
           <TouchableOpacity

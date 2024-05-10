@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Dimensions,
   ScrollView,
@@ -9,7 +9,8 @@ import {
   View,
 } from 'react-native';
 import Line from '../../components/Line/Line';
-import {useAppSelector} from '../../redux/hooks';
+import {setProfileData} from '../../features/users/usersSlice';
+import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 import ClientPage from '../ClientsPage/ClientPage';
 import {orderStyle} from '../ClientsPage/styles';
 
@@ -21,6 +22,23 @@ const MainPage = (props: Props) => {
   const {themeColor} = useAppSelector(select => select.themeColor);
   const [clientsData, setClientsData] = useState<any[]>([]);
   const [line, setLine] = useState(false);
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    async function fetchApp() {
+      const token = await AsyncStorage.getItem('access');
+      axios
+        .get('https://1s-taxi.uz/auth/users/me/', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then(res => {
+          dispatch(setProfileData(res.data));
+        })
+        .catch(err => console.log(err));
+    }
+    fetchApp();
+  }, []);
 
   return (
     <View style={{height: height}}>
@@ -46,7 +64,7 @@ const MainPage = (props: Props) => {
           onPress={async () => {
             const token = await AsyncStorage.getItem('access');
             axios
-              .get(`https://1s-taxi.uz/api/v1/orders/current`, {
+              .get(`https://1s-taxi.uz/api/v1/orders/current/`, {
                 headers: {
                   Authorization: `Bearer ${token}`,
                 },

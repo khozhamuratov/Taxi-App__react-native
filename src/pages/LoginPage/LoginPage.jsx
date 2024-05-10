@@ -95,7 +95,10 @@ const LoginPage = () => {
             value={username}
             style={[
               loginStyles.input,
-              themeColor === 'light' && {borderColor: 'gray'},
+              themeColor === 'light' && [
+                lightTheme.lightText,
+                {borderColor: 'gray'},
+              ],
             ]}
           />
           <View>
@@ -110,7 +113,10 @@ const LoginPage = () => {
               value={password}
               style={[
                 loginStyles.input,
-                themeColor === 'light' && {borderColor: 'gray'},
+                themeColor === 'light' && [
+                  lightTheme.lightText,
+                  {borderColor: 'gray'},
+                ],
               ]}
             />
             <TouchableOpacity

@@ -33,7 +33,24 @@ const Detail = ({item}: {item: Item}) => {
     <View
       style={[
         orderStyle.container,
-        {marginBottom: 10, marginHorizontal: 15, backgroundColor: '#282828'},
+        {
+          marginBottom: 10,
+          marginHorizontal: 15,
+          marginTop: 10,
+          backgroundColor: '#282828',
+        },
+        themeColor === 'light' && {
+          backgroundColor: 'white',
+          shadowColor: '#000',
+          shadowOffset: {
+            width: 0,
+            height: 2,
+          },
+          shadowOpacity: 0.25,
+          shadowRadius: 3.84,
+
+          elevation: 5,
+        },
       ]}>
       <View style={orderStyle.alertHeader}>
         <Text
@@ -76,12 +93,18 @@ const HistoryPage = ({historyData}: any) => {
         }}>
         История пассажиров
       </Text>
-      <FlatList
-        showsVerticalScrollIndicator={false}
-        data={historyData}
-        keyExtractor={(item, index) => String(index)}
-        renderItem={({item}) => <Detail item={item} />}
-      />
+      {historyData.length > 0 ? (
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          data={historyData}
+          keyExtractor={(item, index) => String(index)}
+          renderItem={({item}) => <Detail item={item} />}
+        />
+      ) : (
+        <View style={{alignItems: 'center', marginTop: 150}}>
+          <Text style={{color: 'gray'}}>Список пуст</Text>
+        </View>
+      )}
     </>
   );
 };

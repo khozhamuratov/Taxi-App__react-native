@@ -34,10 +34,13 @@ const FeedBackPage = (props: Props) => {
           </Text>
         </View>
         <Text style={{color: themeColor === 'light' ? 'black' : 'white'}}>
-          Нурполат Омирзаков
+          Алламбергенов Азизбек
         </Text>
         <Text style={{color: themeColor === 'light' ? 'black' : 'white'}}>
-          +998 (77) 000 09 30
+          +998 (77) 106 48 48
+        </Text>
+        <Text style={{color: themeColor === 'light' ? 'black' : 'white'}}>
+          +998 (55) 106 48 48
         </Text>
       </View>
       <View style={{marginTop: 20}}>
@@ -57,7 +60,7 @@ const FeedBackPage = (props: Props) => {
         </View>
         <View>
           <Text style={{color: 'gray'}}>+998 (93) 364 07 67</Text>
-          <Text style={{color: 'gray'}}>polatbeknazarov@gmail.com</Text>
+          <Text style={{color: 'gray'}}>polatbekbeknazarov2003@gmail.com</Text>
         </View>
       </View>
     </View>

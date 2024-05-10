@@ -1,5 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import {SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
+import {
+  ActivityIndicator,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import {Dropdown} from 'react-native-element-dropdown';
 import {
@@ -21,7 +27,9 @@ const WorkPage = props => {
   const [value, setValue] = useState('NK');
   const [valueSecond, setValueSecond] = useState('SB');
   const [isFocus, setIsFocus] = useState(false);
+  const [rejected, setRejected] = useState(false);
   const [startWork, setStartWork] = useState(false);
+  const [loader, setLoader] = useState(false);
   const dispatch = useAppDispatch();
   const [ws, setWs] = useState(null);
 
@@ -29,6 +37,7 @@ const WorkPage = props => {
 
   const handleJoinLine = async () => {
     const socket = await connect('wss://1s-taxi.uz/ws/');
+    setLoader(true);
 
     socket.onopen = () => {
       setWs(socket);
@@ -43,20 +52,27 @@ const WorkPage = props => {
     };
 
     socket.onmessage = e => {
-      console.log('Nurman', e.data);
       if ('line' in JSON.parse(e.data)) {
         dispatch(listUsers(JSON.parse(e.data).line));
-        console.log('line', e.data);
         setError(false);
+        setLoader(false);
       } else if ('order' in JSON.parse(e.data)) {
         dispatch(orderAlert(true));
         dispatch(setOrdersDetail(JSON.parse(e.data).order));
         setError(false);
       } else if (JSON.parse(e.data).type === 'completed') {
         dispatch(listUsers(''));
-        ws?.close();
+        socket.close();
         setError(false);
         setStartWork(false);
+      } else if (JSON.parse(e.data).type === 'rejected') {
+        socket.close();
+        setStartWork(false);
+        setRejected(true);
+      } else if ('order' in JSON.parse(e.data)) {
+        dispatch(orderAlert(true));
+        dispatch(setOrdersDetail(JSON.parse(e.data).order));
+        setError(false);
       }
     };
 
@@ -114,7 +130,6 @@ const WorkPage = props => {
                 backgroundColor: themeColor === 'light' ? 'white' : '#141414',
                 borderWidth: 0,
                 marginTop: 4,
-                borderRadius: 10,
               }}
               data={data}
               maxHeight={300}
@@ -158,7 +173,6 @@ const WorkPage = props => {
                 backgroundColor: themeColor === 'light' ? 'white' : '#141414',
                 borderWidth: 0,
                 marginTop: 4,
-                borderRadius: 10,
               }}
               data={data}
               maxHeight={300}
@@ -187,15 +201,30 @@ const WorkPage = props => {
               Произошла ошибка. Попробуйте ещё раз
             </Text>
           )}
+          {rejected && (
+            <Text
+              style={{
+                width: width - 100,
+                fontSize: 12,
+                marginTop: 10,
+                color: '#EF4040',
+              }}>
+              Пополните баланс. На вашем счету недостаточно средств
+            </Text>
+          )}
           <TouchableOpacity
             onPress={() => (startWork ? handleOutLine() : handleJoinLine())}
             style={[
               WorkPageStyles.button,
               startWork && {backgroundColor: '#EF4040'},
             ]}>
-            <Text style={WorkPageStyles.btnTxt}>
-              {startWork ? 'Завершить работу' : 'Начать работу'}
-            </Text>
+            {loader ? (
+              <ActivityIndicator color={'gray'} size={'small'} />
+            ) : (
+              <Text style={WorkPageStyles.btnTxt}>
+                {startWork ? 'Завершить работу' : 'Начать работу'}
+              </Text>
+            )}
           </TouchableOpacity>
         </View>
         <Text style={{marginTop: 20, fontSize: 12, color: 'gray'}}>

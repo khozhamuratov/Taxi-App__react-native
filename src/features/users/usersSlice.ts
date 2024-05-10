@@ -17,6 +17,7 @@ interface UsersState {
   isAlert: boolean;
   ordersDetails: any[];
   themeColor: string;
+  profileData: any;
 }
 
 const initialState: UsersState = {
@@ -36,6 +37,7 @@ const initialState: UsersState = {
   isAlert: false,
   ordersDetails: [],
   themeColor: '',
+  profileData: {},
 };
 
 export const usersSlice = createSlice({
@@ -75,15 +77,20 @@ export const usersSlice = createSlice({
     setOrdersDetail: (state, action) => {
       const newDatas = [...state.ordersDetails, action.payload];
       state.ordersDetails = newDatas;
-      console.log('setOrders', state.ordersDetails);
+      console.log(state.ordersDetails);
     },
     removeOrder: (state, action) => {
       state.ordersDetails = state.ordersDetails.filter(
         item => item.id !== action.payload,
       );
+      console.log('Order', state.ordersDetails);
+      console.log('Id', action.payload);
     },
     themeToggler: (state, action) => {
       state.themeColor = action.payload;
+    },
+    setProfileData: (state, action) => {
+      state.profileData = action.payload;
     },
   },
 });
@@ -100,5 +107,6 @@ export const {
   setOrdersDetail,
   removeOrder,
   themeToggler,
+  setProfileData,
 } = usersSlice.actions;
 export default usersSlice.reducer;

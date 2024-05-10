@@ -14,7 +14,6 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
-import DeviceInfo from 'react-native-device-info';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {useDispatch} from 'react-redux';
@@ -67,25 +66,10 @@ const ProfilePage = () => {
     ]);
   };
 
-  const [appVersion, setAppVersion] = useState('');
-  const [profileData, setProfileData] = useState<UserData | null>(null);
   const [historyData, setHistoryData] = useState<UserData | null>(null);
   const refRBSheet: React.MutableRefObject<any> = useRef();
   const refRBSheet2: React.MutableRefObject<any> = useRef();
-
-  const getHistoryData = (token: any) => {
-    axios
-      .get(`https://api.1s-taxi.uz/api/v1/orders/history/`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then(res => {
-        setHistoryData(res.data);
-        console.log(res.data);
-      })
-      .catch(err => console.log(err));
-  };
+  const {profileData} = useAppSelector(select => select.profileData);
 
   const [isEnabled, setIsEnabled] = useState(false);
 
@@ -111,21 +95,17 @@ const ProfilePage = () => {
   };
 
   useEffect(() => {
-    async function fetchApp() {
-      const version = DeviceInfo.getVersion();
+    async function fetchHistoryData() {
       const token = await AsyncStorage.getItem('access');
-      setAppVersion(version);
       axios
-        .get('https://1s-taxi.uz/auth/users/me', {
+        .get(`https://1s-taxi.uz/api/v1/orders/history/`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         })
         .then(res => {
-          setProfileData(res.data);
-          if (res.data) {
-            getHistoryData(token);
-          }
+          setHistoryData(res.data);
+          console.log(res.data);
         })
         .catch(err => console.log(err));
     }
@@ -136,7 +116,7 @@ const ProfilePage = () => {
 
     themeColor === 'light' ? setIsEnabled(false) : setIsEnabled(true);
 
-    fetchApp();
+    fetchHistoryData();
   }, []);
 
   return (
@@ -326,7 +306,7 @@ const ProfilePage = () => {
           <RBSheet
             ref={refRBSheet2}
             useNativeDriver={false}
-            height={230}
+            height={250}
             closeOnPressBack={true}
             dragOnContent={false}
             draggable={true}

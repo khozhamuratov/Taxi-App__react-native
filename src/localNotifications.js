@@ -16,6 +16,7 @@ const LocalNotification = message => {
     channelId: key, //this must be same with channelid in createchannel
     title: 'Примите заказ',
     message: message,
+    playSound: false,
     soundName: './sound.mp3',
   });
 };

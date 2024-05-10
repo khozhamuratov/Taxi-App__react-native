@@ -12,6 +12,7 @@ export const store = configureStore({
     isAlert: usersSlice,
     ordersDetails: usersSlice,
     themeColor: usersSlice,
+    profileData: usersSlice,
   },
 });
 

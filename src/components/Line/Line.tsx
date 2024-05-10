@@ -12,6 +12,7 @@ const Line = () => {
   const {themeColor} = useAppSelector(select => select.themeColor);
   const {Driver} = useAppSelector(select => select.selectedDriver);
   const date = new Date(Driver.joined_at);
+  const {profileData} = useAppSelector(select => select.profileData);
 
   const dispatch = useAppDispatch();
 
@@ -29,7 +30,11 @@ const Line = () => {
               key={user.id}
               style={[
                 driverStyles.driversTableRow,
-                user.id === 3 ? driverStyles.active : null,
+                user.car_number === profileData.username
+                  ? themeColor !== 'light'
+                    ? driverStyles.active
+                    : {backgroundColor: '#f1f1f1'}
+                  : null,
               ]}>
               <View style={driverStyles.driverInfo}>
                 <Text style={driverStyles.span}>{index + 1}</Text>
@@ -75,7 +80,7 @@ const Line = () => {
         <RBSheet
           ref={refRBSheet}
           useNativeDriver={false}
-          height={200}
+          height={170}
           closeOnPressBack={true}
           dragOnContent={false}
           draggable={true}
@@ -84,23 +89,36 @@ const Line = () => {
               backgroundColor: 'transparent',
             },
             draggableIcon: {
-              backgroundColor: '#FFF',
+              backgroundColor: themeColor === 'light' ? 'black' : '#FFF',
             },
             container: {
               borderTopLeftRadius: 20,
               borderTopRightRadius: 20,
-              backgroundColor: '#212121',
+              backgroundColor: themeColor === 'light' ? '#fff' : '#212121',
+              shadowColor: '#000',
+              shadowOffset: {
+                width: 0,
+                height: 4,
+              },
+              shadowOpacity: 0.25,
+              shadowRadius: 3.84,
+
+              elevation: 5,
             },
           }}
           customModalProps={{
-            animationType: 'slide',
+            animationType: 'fade',
             statusBarTranslucent: true,
           }}
           customAvoidingViewProps={{
             enabled: false,
           }}>
           <View style={driverStyles.driverWrapper}>
-            <Text style={driverStyles.h1}>
+            <Text
+              style={[
+                driverStyles.h1,
+                themeColor === 'light' && {color: 'black'},
+              ]}>
               {Driver.first_name} {Driver.last_name}
             </Text>
             <Text style={driverStyles.span}>

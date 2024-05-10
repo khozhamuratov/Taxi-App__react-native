@@ -7,6 +7,15 @@ export const alertStyle = StyleSheet.create({
     padding: 15,
     backgroundColor: '#222222',
     borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+
+    elevation: 5,
   },
   alertHeader: {
     display: 'flex',
@@ -57,5 +66,6 @@ export const alertStyle = StyleSheet.create({
   },
   text: {
     color: '#CCC',
+    fontWeight: '600',
   },
 });
