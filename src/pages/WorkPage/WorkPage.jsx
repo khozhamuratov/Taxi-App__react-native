@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {
   ActivityIndicator,
   SafeAreaView,
@@ -6,16 +6,19 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import DeviceInfo from 'react-native-device-info';
 import {Dropdown} from 'react-native-element-dropdown';
 import {
   listUsers,
   orderAlert,
+  setCompleted,
+  setFreeOrders,
   setOrdersDetail,
+  showAlert,
 } from '../../features/users/usersSlice';
+import LocalNotification from '../../localNotifications';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 import {lightTheme, width} from '../../styles';
-import {connect, send} from '../../websocketMiddlware';
+import {close, connect, send} from '../../websocketMiddlware';
 import {WorkPageStyles} from './styles';
 
 const data = [
@@ -34,6 +37,7 @@ const WorkPage = props => {
   const [ws, setWs] = useState(null);
 
   const {themeColor} = useAppSelector(select => select.themeColor);
+  const {freeOrders} = useAppSelector(select => select.freeOrders);
 
   const handleJoinLine = async () => {
     const socket = await connect('wss://1s-taxi.uz/ws/');
@@ -56,6 +60,7 @@ const WorkPage = props => {
         dispatch(listUsers(JSON.parse(e.data).line));
         setError(false);
         setLoader(false);
+        dispatch(setCompleted(false));
       } else if ('order' in JSON.parse(e.data)) {
         dispatch(orderAlert(true));
         dispatch(setOrdersDetail(JSON.parse(e.data).order));
@@ -65,38 +70,46 @@ const WorkPage = props => {
         socket.close();
         setError(false);
         setStartWork(false);
+        dispatch(setFreeOrders(''));
+        dispatch(setCompleted(true));
       } else if (JSON.parse(e.data).type === 'rejected') {
         socket.close();
         setStartWork(false);
-        setRejected(true);
-      } else if ('order' in JSON.parse(e.data)) {
-        dispatch(orderAlert(true));
-        dispatch(setOrdersDetail(JSON.parse(e.data).order));
-        setError(false);
+        dispatch(showAlert('rejected'));
+      } else if ('free_order' in JSON.parse(e.data)) {
+        dispatch(setFreeOrders(JSON.parse(e.data).free_order));
+        LocalNotification('Свободный заказ');
+      } else if ('free_orders' in JSON.parse(e.data)) {
+        dispatch(setFreeOrders(JSON.parse(e.data).free_orders));
+        if (JSON.parse(e.data).free_orders.length > 0) {
+          LocalNotification('Доступен новый свободный заказ');
+        }
+      } else if (JSON.parse(e.data).type === 'canceled') {
+        dispatch(orderAlert(false));
+      } else if (JSON.parse(e.data).type === 'over_limit') {
+        dispatch(showAlert('over_limit'));
       }
     };
 
-    socket.onerror = e => {
-      setError(true);
+    socket.onerror = async e => {
+      dispatch(setFreeOrders([]));
+      dispatch(listUsers([]));
+      setStartWork(false);
+      dispatch(orderAlert(false));
+      close();
     };
   };
-  const [appVersion, setAppVersion] = useState('');
   const [error, setError] = useState(false);
-
-  useEffect(() => {
-    async function fetchAppVersion() {
-      const version = DeviceInfo.getVersion();
-      setAppVersion(version);
-    }
-
-    fetchAppVersion();
-  }, []);
   const handleOutLine = () => {
     if (ws) {
-      send({type: 'work_completed'});
-      setStartWork(!startWork);
+      send({
+        type: 'disconnect',
+      });
       ws.close();
+      setStartWork(!startWork);
       dispatch(listUsers({}));
+      dispatch(setFreeOrders([]));
+      dispatch(orderAlert(false));
     }
   };
 
@@ -199,17 +212,6 @@ const WorkPage = props => {
                 color: '#EF4040',
               }}>
               Произошла ошибка. Попробуйте ещё раз
-            </Text>
-          )}
-          {rejected && (
-            <Text
-              style={{
-                width: width - 100,
-                fontSize: 12,
-                marginTop: 10,
-                color: '#EF4040',
-              }}>
-              Пополните баланс. На вашем счету недостаточно средств
             </Text>
           )}
           <TouchableOpacity

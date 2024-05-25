@@ -17,54 +17,33 @@ const checkApplicationPermission = async () => {
 const RemoteNotification = () => {
   useEffect(() => {
     checkApplicationPermission();
-    // Using this function as we are rendering local notification so without this function we will receive multiple notification for same notification
-    // We have same channelID for every FCM test server notification.
     PushNotification.getChannels(function (channel_ids) {
       channel_ids.forEach(id => {
         PushNotification.deleteChannel(id);
       });
     });
     PushNotification.configure({
-      // (optional) Called when Token is generated (iOS and Android)
-      onRegister: function (token) {
-        console.log('TOKEN:', token);
-      },
-
       soundName: 'sound.mp3',
-
-      // (required) Called when a remote or local notification is opened or received
       onNotification: function (notification) {
         const {message, title, id} = notification;
         let strTitle: string = JSON.stringify(title).split('"').join('');
         let strBody: string = JSON.stringify(message).split('"').join('');
         const key: string = JSON.stringify(id).split('"').join('');
-        PushNotification.createChannel(
-          {
-            channelId: key, // (required & must be unique)
-            channelName: 'remote messasge', // (required)
-            channelDescription: 'Notification for remote message', // (optional) default: undefined.
-            importance: 4, // (optional) default: 4. Int value of the Android notification importance
-            vibrate: true, // (optional) default: true. Creates the default vibration patten if true.
-            soundName: './sound.mp3',
-          },
-          created => console.log(`createChannel returned '${created}'`), // (optional) callback returns whether the channel was created, false means it already existed.
-        );
+        PushNotification.createChannel({
+          channelId: key,
+          channelName: 'remote messasge',
+          channelDescription: 'Notification for remote message',
+          importance: 4,
+          vibrate: true,
+          soundName: './sound.mp3',
+        });
         PushNotification.localNotification({
           channelId: key, //this must be same with channelId in createchannel
           title: strTitle,
           message: strBody,
           soundName: './sound.mp3',
         });
-        console.log(
-          'REMOTE NOTIFICATION ==>',
-          title,
-          message,
-          id,
-          notification,
-        );
-        // process the notification here
       },
-      // Android only: GCM or FCM Sender ID
       senderID: '897648259596',
       popInitialNotification: true,
       requestPermissions: true,

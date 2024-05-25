@@ -11,12 +11,9 @@ export class OrderActions {
   acceptOrder = () => {
     this.dispatch(orderAlert(false));
     send({type: 'accept', order_id: `${this.id}`});
-    // this.dispatch(removeOrder(this.id));
-    console.log('orderId', this.id);
   };
   rejectOrder = () => {
     this.dispatch(orderAlert(false));
-    // this.dispatch(removeOrder(this.id));
   };
 }
 

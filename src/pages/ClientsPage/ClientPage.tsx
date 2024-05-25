@@ -4,8 +4,6 @@ import {useAppSelector} from '../../redux/hooks';
 import {lightTheme} from '../../styles';
 import {orderStyle} from './styles';
 
-type Props = {};
-
 const cityKeys: any = {
   NK: 'Нукус',
   SB: 'Шымбай',

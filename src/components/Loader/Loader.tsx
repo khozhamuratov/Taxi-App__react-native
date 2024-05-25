@@ -22,11 +22,12 @@ const Loader = (props: Props) => {
       ]}>
       <Image
         style={{
-          width: 90,
-          height: 90,
-          objectFit: 'scale-down',
+          width: 120,
+          height: 120,
+          borderRadius: 200,
+          objectFit: 'cover',
         }}
-        source={require('./logo.png')}
+        source={require('./logo.jpg')}
       />
     </View>
   );

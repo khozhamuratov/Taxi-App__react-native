@@ -8,11 +8,14 @@ export const store = configureStore({
     selectedDriver: usersSlice,
     isLogined: usersSlice,
     isWork: usersSlice,
-    websocket: usersSlice,
+    alertType: usersSlice,
     isAlert: usersSlice,
     ordersDetails: usersSlice,
     themeColor: usersSlice,
     profileData: usersSlice,
+    freeOrders: usersSlice,
+    isCompleted: usersSlice,
+    isHidden: usersSlice,
   },
 });
 

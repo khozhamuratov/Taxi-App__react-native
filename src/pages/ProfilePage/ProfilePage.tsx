@@ -53,7 +53,6 @@ const ProfilePage = () => {
     Alert.alert('Выйти из аккаунта', 'Вы точно хотите выйти?', [
       {
         text: 'Отмена',
-        onPress: () => console.log('Cancel Pressed'),
       },
       {
         text: 'Выйти из аккаунта',
@@ -84,12 +83,10 @@ const ProfilePage = () => {
   const toggleSwitch = () => {
     if (isEnabled) {
       dispatch(themeToggler('light'));
-      console.log(colorScheme);
       setStatusBarStyle(STYLES[1]);
     } else {
       dispatch(themeToggler('dark'));
       setStatusBarStyle(STYLES[2]);
-      console.log(themeColor);
     }
     setIsEnabled(previousState => !previousState);
   };
@@ -105,9 +102,7 @@ const ProfilePage = () => {
         })
         .then(res => {
           setHistoryData(res.data);
-          console.log(res.data);
-        })
-        .catch(err => console.log(err));
+        });
     }
 
     themeColor === 'light'
@@ -153,7 +148,14 @@ const ProfilePage = () => {
                       ProfileStyles.carNumber,
                       themeColor === 'light' && lightTheme.lightText,
                     ]}>
-                    {profileData.username}
+                    {profileData.username} · {profileData.car_number}
+                  </Text>
+                  <Text
+                    style={[
+                      ProfileStyles.carNumber,
+                      themeColor === 'light' && lightTheme.lightText,
+                    ]}>
+                    {profileData.car_brand}
                   </Text>
                 </>
               ) : (

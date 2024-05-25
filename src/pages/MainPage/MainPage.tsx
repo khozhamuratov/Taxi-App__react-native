@@ -2,27 +2,31 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import React, {useEffect, useState} from 'react';
 import {
-  Dimensions,
+  ActivityIndicator,
   ScrollView,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
 import Line from '../../components/Line/Line';
-import {setProfileData} from '../../features/users/usersSlice';
+import {
+  listUsers,
+  setFreeOrders,
+  setProfileData,
+} from '../../features/users/usersSlice';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
+import {height, width} from '../../styles';
+import {close} from '../../websocketMiddlware';
 import ClientPage from '../ClientsPage/ClientPage';
 import {orderStyle} from '../ClientsPage/styles';
 
-const height = Dimensions.get('screen').height;
-
-type Props = {};
-
-const MainPage = (props: Props) => {
+const MainPage = () => {
   const {themeColor} = useAppSelector(select => select.themeColor);
   const [clientsData, setClientsData] = useState<any[]>([]);
   const [line, setLine] = useState(false);
+  const [loader, setLoader] = useState(false);
   const dispatch = useAppDispatch();
+
   useEffect(() => {
     async function fetchApp() {
       const token = await AsyncStorage.getItem('access');
@@ -35,7 +39,9 @@ const MainPage = (props: Props) => {
         .then(res => {
           dispatch(setProfileData(res.data));
         })
-        .catch(err => console.log(err));
+        .catch(async err => {
+          console.log(err);
+        });
     }
     fetchApp();
   }, []);
@@ -63,6 +69,7 @@ const MainPage = (props: Props) => {
         <TouchableOpacity
           onPress={async () => {
             const token = await AsyncStorage.getItem('access');
+            setLoader(true);
             axios
               .get(`https://1s-taxi.uz/api/v1/orders/current/`, {
                 headers: {
@@ -70,10 +77,14 @@ const MainPage = (props: Props) => {
                 },
               })
               .then(res => {
+                setLoader(false);
                 setClientsData(res.data);
-                console.log(res.data);
               })
-              .catch(err => console.log(err));
+              .catch(async err => {
+                dispatch(setFreeOrders([]));
+                dispatch(listUsers([]));
+                close();
+              });
             setLine(true);
           }}
           style={[
@@ -91,7 +102,21 @@ const MainPage = (props: Props) => {
         </TouchableOpacity>
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
-        {!line ? <Line /> : <ClientPage clientsData={clientsData} />}
+        {!line ? (
+          <Line />
+        ) : loader ? (
+          <View
+            style={{
+              width: width,
+              height: height - 150,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <ActivityIndicator color={'gray'} size={25} />
+          </View>
+        ) : (
+          <ClientPage clientsData={clientsData} />
+        )}
       </ScrollView>
     </View>
   );

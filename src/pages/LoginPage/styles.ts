@@ -20,7 +20,7 @@ export const loginStyles = StyleSheet.create({
   },
   input: {
     borderWidth: 0.2,
-    borderColor: '#ccc',
+    borderColor: 'gray',
     width: width - 100,
     height: 50,
     borderRadius: 5,

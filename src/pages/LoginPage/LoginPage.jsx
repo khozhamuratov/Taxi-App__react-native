@@ -33,7 +33,6 @@ const LoginPage = () => {
         }
       });
     } catch (error) {
-      console.log(error);
       setError(true);
       setLoader(false);
     }
@@ -47,30 +46,6 @@ const LoginPage = () => {
     });
   }, [isLogined]);
 
-  // const refreshAccessToken = () => {
-  //   try {
-  //     const response = await axios.post(
-  //       'http://192.168.100.8:8080/auth/jwt/refresh',
-  //       {
-  //         refreshToken,
-  //       },
-  //     );
-
-  //     const newAccessToken = response.data.accessToken;
-
-  //     setAccessToken(newAccessToken);
-
-  //     // Сохраняем новый access токен в AsyncStorage
-  //     await AsyncStorage.setItem('accessToken', newAccessToken);
-
-  //     // Повторяем запрос к API с новым access токеном
-  //     await handleApiCall();
-  //   } catch (error) {
-  //     console.error('Refresh token error:', error);
-  //     // Если не удалось обновить токен, перенаправляем пользователя на экран входа
-  //     handleLogout();
-  //   }
-  // };
   return (
     <>
       {!loader ? (
@@ -93,6 +68,7 @@ const LoginPage = () => {
             placeholder="Введите номер машины"
             onChangeText={text => setUsername(text)}
             value={username}
+            placeholderTextColor={'gray'}
             style={[
               loginStyles.input,
               themeColor === 'light' && [
@@ -107,6 +83,7 @@ const LoginPage = () => {
               numberOfLines={4}
               maxLength={40}
               secureTextEntry={visible}
+              placeholderTextColor={'gray'}
               placeholder="Введите пароль"
               password={visible}
               onChangeText={text => setPassword(text)}
@@ -122,7 +99,13 @@ const LoginPage = () => {
             <TouchableOpacity
               onPress={() => setVisible(!visible)}
               style={{position: 'absolute', right: 10, top: 22}}>
-              <Text style={{textAlign: 'right', marginTop: 5, fontSize: 12}}>
+              <Text
+                style={{
+                  textAlign: 'right',
+                  marginTop: 5,
+                  fontSize: 12,
+                  color: '#ccc',
+                }}>
                 {visible ? 'Показать' : 'Скрыть'}
               </Text>
             </TouchableOpacity>

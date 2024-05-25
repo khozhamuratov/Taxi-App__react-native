@@ -20,12 +20,10 @@ const IsAuthorization = () => {
   useEffect(() => {
     dispatch(themeToggler(colorScheme));
     if (themeColor === 'dark') {
-      setIsEnabled(true); // true means dark
+      setIsEnabled(true);
       setStatusBarStyle(STYLES[1]);
-      console.log(themeColor);
     } else {
-      setIsEnabled(false); // false means light
-      console.log(themeColor);
+      setIsEnabled(false);
       setStatusBarStyle(STYLES[2]);
     }
   }, []);

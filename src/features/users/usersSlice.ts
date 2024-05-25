@@ -7,27 +7,32 @@ interface UsersState {
     first_name: string;
     last_name: string;
     car_number: string;
+    car_brand: string;
     passengers: number;
     joined_at: string;
   };
-  websocket: any;
+  alertType: any;
   isSelected: boolean;
   isLogined: boolean;
   isWork: boolean;
   isAlert: boolean;
+  isHidden: boolean;
+  isCompleted: boolean;
   ordersDetails: any[];
   themeColor: string;
   profileData: any;
+  freeOrders: any[];
 }
 
 const initialState: UsersState = {
   listDrivers: [],
-  websocket: {},
+  alertType: {},
   Driver: {
     id: 0,
     first_name: '',
     last_name: '',
     car_number: '',
+    car_brand: '',
     passengers: 0,
     joined_at: '',
   },
@@ -35,9 +40,12 @@ const initialState: UsersState = {
   isLogined: false,
   isWork: false,
   isAlert: false,
+  isCompleted: false,
+  isHidden: false,
   ordersDetails: [],
   themeColor: '',
   profileData: {},
+  freeOrders: [],
 };
 
 export const usersSlice = createSlice({
@@ -56,9 +64,6 @@ export const usersSlice = createSlice({
         state.Driver = selectedDriver;
       }
     },
-    setWebsocket: (state, action) => {
-      state.websocket = action.payload;
-    },
     selected: state => {
       state.isSelected = !state.isSelected;
     },
@@ -75,16 +80,12 @@ export const usersSlice = createSlice({
       state.isAlert = action.payload;
     },
     setOrdersDetail: (state, action) => {
-      const newDatas = [...state.ordersDetails, action.payload];
-      state.ordersDetails = newDatas;
-      console.log(state.ordersDetails);
+      state.ordersDetails = [action.payload];
     },
     removeOrder: (state, action) => {
       state.ordersDetails = state.ordersDetails.filter(
         item => item.id !== action.payload,
       );
-      console.log('Order', state.ordersDetails);
-      console.log('Id', action.payload);
     },
     themeToggler: (state, action) => {
       state.themeColor = action.payload;
@@ -92,13 +93,26 @@ export const usersSlice = createSlice({
     setProfileData: (state, action) => {
       state.profileData = action.payload;
     },
+    setFreeOrders: (state, action) => {
+      state.freeOrders = action.payload;
+    },
+    setCompleted: (state, action) => {
+      state.isCompleted = action.payload;
+    },
+    showAlert: (state, action) => {
+      state.isHidden = true;
+      state.alertType = action.payload;
+    },
+    clearAlert: state => {
+      state.isHidden = false;
+      state.alertType = null;
+    },
   },
 });
 
 export const {
   listUsers,
   selected,
-  setWebsocket,
   selectedDriver,
   logined,
   work,
@@ -108,5 +122,9 @@ export const {
   removeOrder,
   themeToggler,
   setProfileData,
+  setFreeOrders,
+  setCompleted,
+  showAlert,
+  clearAlert,
 } = usersSlice.actions;
 export default usersSlice.reducer;

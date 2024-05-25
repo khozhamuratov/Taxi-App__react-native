@@ -3,6 +3,7 @@ import {Text, TouchableOpacity, View} from 'react-native';
 import {alertStyle} from './styles';
 
 import {Component} from 'react';
+import Sound from 'react-native-sound';
 import {connect} from 'react-redux';
 import {removeOrder} from '../../../features/users/usersSlice';
 import LocalNotification from '../../../localNotifications';
@@ -16,6 +17,12 @@ class Alert extends Component {
       counter: 15,
       isAlertShown: false,
     };
+    this.sound = new Sound('sound.mp3', Sound.MAIN_BUNDLE, error => {
+      if (error) {
+        return;
+      }
+      this.sound.play();
+    });
   }
   componentDidMount() {
     const {dispatch, id, address, isAlert} = this.props;
@@ -28,7 +35,6 @@ class Alert extends Component {
         if (this.state.counter === 1) {
           clearInterval(this.interval);
           dispatch(removeOrder(id));
-          // this.tst.rejectOrder();
           this.setState(() => ({
             isAlertShown: false,
           }));
@@ -65,7 +71,7 @@ class Alert extends Component {
               alertStyle.orderTitle,
               this.props.isAlert.themeColor === 'light' ? {color: 'black'} : {},
             ]}>
-            Новый заказ:
+            Новая заявка:
           </Text>
           <View style={alertStyle.alertCounter}>
             <Text
@@ -116,6 +122,7 @@ class Alert extends Component {
                 isAlertShown: false,
               }));
               this.tst.acceptOrder();
+              this.sound.stop();
             }}
             style={alertStyle.button}>
             <Text style={alertStyle.buttonTxt}>Принять</Text>
@@ -126,6 +133,7 @@ class Alert extends Component {
                 isAlertShown: false,
               }));
               this.tst.rejectOrder();
+              this.sound.stop();
             }}
             style={[alertStyle.button, {backgroundColor: '#EF4040'}]}>
             <Text style={alertStyle.buttonTxt}>Отклонить</Text>
